@@ -30,6 +30,9 @@ with open(USER_PROFILE, mode='r', encoding='utf-8') as f:
     user_profile = json.load(f)
 # pprint(user_profile)
 
+# mods_permitted = int(bool(len(r.json()['data'])))
+user_profile['UserProfile'].update({'areModsPermitted': 1})
+
 for data in r.json()['data']:
     mod_id = data['id']
     mod_name = data['name']
