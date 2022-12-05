@@ -4,6 +4,7 @@ import shutil
 import requests
 import json
 from tqdm import tqdm
+from random import randint
 
 
 load_dotenv()
@@ -23,12 +24,12 @@ data = {
 
 r = requests.get('https://api.mod.io/v1/me/subscribed', params={}, headers=headers, json=data)
 
-with open(USER_PROFILE, mode='r', encoding='utf-8') as f:
-    user_profile = json.loads(f.read().rstrip('\0'))
+with open('user_profile.cfg', mode='r', encoding='utf-8') as f:
+    user_profile = json.load(f)
+    # user_profile = json.loads(f.read().rstrip('\0'))
 
-user_profile['UserProfile'].update({'areModsPermitted': 1})
-user_profile['UserProfile'].update({'modFilter': {'user0': {'SslType': 'ModBrowserConfigData', 'SslValue': {'isEnabledMode': False, 'tags': [], 'isConsoleForbiddenMode': False, 'isSubscriptionsMode': False, 'isConsoleApprovedMode': False, 'sortIsAsc': False, 'sortField': 'popular'}}}})
-user_profile['UserProfile'].update({'modDependencies': {'SslType': 'ModDependencies', 'SslValue': {'dependencies': {}}}})
+# user_profile['UserProfile'].update({'modDependencies': {'SslType': 'ModDependencies', 'SslValue': {'dependencies': {}}}})
+user_profile['UserProfile'].update({'modFilter': {'user' + str(randint(10**3, 10**5)): {'SslType': 'ModBrowserConfigData', 'SslValue': {'isEnabledMode': False, 'tags': [], 'isConsoleForbiddenMode': False, 'isSubscriptionsMode': False, 'isConsoleApprovedMode': False, 'sortIsAsc': False, 'sortField': 'popular'}}}})
 
 for data in r.json()['data']:
     mod_id = data['id']
@@ -39,11 +40,18 @@ for data in r.json()['data']:
     except FileExistsError:
         pass
     else:
-        with open(f'{MODS_DIR}/{mod_id}/modio.json', mode='w', encoding='utf-8') as f:
+        for res in ('320x180', '640x360'):
+            url = data['logo'][f'thumb_{res}']
+            logo_path = f'{mod_dir}/logo_{res}.png'
+            data['logo'][f'thumb_{res}'] = f'file:///{logo_path}'
+            d = requests.get(url)
+            with open(logo_path, mode='wb') as f:
+                f.write(d.content)
+        with open(f'{mod_dir}/modio.json', mode='w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
         mod_url = data['modfile']['download']['binary_url']
         mod_filename = data['modfile']['filename']
-        mod_fullpath = f'{MODS_DIR}/{mod_id}/{mod_filename}'
+        mod_fullpath = f'{mod_dir}/{mod_filename}'
         print(f'Downloading "{mod_name}" ({mod_filename})')
         response = requests.get(mod_url, stream=True)
         with open(mod_fullpath, mode='wb') as f:
