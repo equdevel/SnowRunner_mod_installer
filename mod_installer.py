@@ -1,8 +1,6 @@
 import os
-import sys
 from dotenv import load_dotenv
 import shutil
-from pprint import pprint, pformat
 import requests
 import json
 from tqdm import tqdm
@@ -24,14 +22,13 @@ data = {
 }
 
 r = requests.get('https://api.mod.io/v1/me/subscribed', params={}, headers=headers, json=data)
-# pprint(r.json())
 
 with open(USER_PROFILE, mode='r', encoding='utf-8') as f:
-    user_profile = json.load(f)
-# pprint(user_profile)
+    user_profile = json.loads(f.read().rstrip('\0'))
 
-# mods_permitted = int(bool(len(r.json()['data'])))
 user_profile['UserProfile'].update({'areModsPermitted': 1})
+user_profile['UserProfile'].update({'modFilter': {'user0': {'SslType': 'ModBrowserConfigData', 'SslValue': {'isEnabledMode': False, 'tags': [], 'isConsoleForbiddenMode': False, 'isSubscriptionsMode': False, 'isConsoleApprovedMode': False, 'sortIsAsc': False, 'sortField': 'popular'}}}})
+user_profile['UserProfile'].update({'modDependencies': {'SslType': 'ModDependencies', 'SslValue': {'dependencies': {}}}})
 
 for data in r.json()['data']:
     mod_id = data['id']
@@ -56,10 +53,8 @@ for data in r.json()['data']:
         shutil.unpack_archive(mod_fullpath, mod_dir, 'zip')
         os.remove(mod_fullpath)
         print('OK')
-        user_profile['UserProfile']['modDependencies']['SslValue']['dependencies'].update({str(mod_id): []})
-        # user_profile['UserProfile']['modStateList'].append({'modId': mod_id, 'modState': False})
     finally:
-        pass
+        user_profile['UserProfile']['modDependencies']['SslValue']['dependencies'].update({str(mod_id): []})
 
 with open(USER_PROFILE, mode='w', encoding='utf-8') as f:
     json.dump(user_profile, f, ensure_ascii=False, indent=4)
