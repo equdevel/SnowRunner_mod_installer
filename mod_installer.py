@@ -26,10 +26,13 @@ r = requests.get('https://api.mod.io/v1/me/subscribed', headers=headers, json=da
 with open(USER_PROFILE, mode='r', encoding='utf-8') as f:
     user_profile = json.loads(f.read().rstrip('\0'))
 
+mods_subscribed = []
+
 for data in r.json()['data']:
     mod_id = data['id']
     mod_name = data['name']
     mod_dir = f'{MODS_DIR}/{mod_id}'
+    mods_subscribed.append(mod_id)
     try:
         os.mkdir(mod_dir)
     except FileExistsError:
@@ -56,7 +59,9 @@ for data in r.json()['data']:
         shutil.unpack_archive(mod_fullpath, mod_dir, 'zip')
         os.remove(mod_fullpath)
         print('OK')
-        user_profile['UserProfile']['modDependencies']['SslValue']['dependencies'].update({str(mod_id): []})
+
+user_profile['UserProfile']['modDependencies']['SslValue']['dependencies'] = {str(mod_id): [] for mod_id in mods_subscribed}
+user_profile['UserProfile']['modStateList'] = [mod for mod in user_profile['UserProfile']['modStateList'] if mod['modId'] in mods_subscribed]
 
 with open(USER_PROFILE, mode='w', encoding='utf-8') as f:
     f.write(json.dumps(user_profile, ensure_ascii=False, indent=4) + '\0')
