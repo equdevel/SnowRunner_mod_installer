@@ -8,6 +8,7 @@ from tqdm import tqdm
 
 load_dotenv()
 ACCESS_TOKEN = os.getenv('ACCESS_TOKEN')
+USER_PROFILE = os.getenv('USER_PROFILE')
 MODS_DIR = os.getenv('MODS_DIR')
 
 headers = {
@@ -21,6 +22,9 @@ data = {
 }
 
 r = requests.get('https://api.mod.io/v1/me/subscribed', headers=headers, json=data)
+
+with open(USER_PROFILE, mode='r', encoding='utf-8') as f:
+    user_profile = json.loads(f.read().rstrip('\0'))
 
 for data in r.json()['data']:
     mod_id = data['id']
@@ -52,3 +56,7 @@ for data in r.json()['data']:
         shutil.unpack_archive(mod_fullpath, mod_dir, 'zip')
         os.remove(mod_fullpath)
         print('OK')
+        user_profile['UserProfile']['modDependencies']['SslValue']['dependencies'].update({str(mod_id): []})
+
+with open(USER_PROFILE, mode='w', encoding='utf-8') as f:
+    f.write(json.dumps(user_profile, ensure_ascii=False, indent=4) + '\0')
