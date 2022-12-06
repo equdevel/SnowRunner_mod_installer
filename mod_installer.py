@@ -4,12 +4,10 @@ import shutil
 import requests
 import json
 from tqdm import tqdm
-from random import randint
 
 
 load_dotenv()
 ACCESS_TOKEN = os.getenv('ACCESS_TOKEN')
-USER_PROFILE = os.getenv('USER_PROFILE')
 MODS_DIR = os.getenv('MODS_DIR')
 
 headers = {
@@ -22,14 +20,7 @@ data = {
     'game_id': 306
 }
 
-r = requests.get('https://api.mod.io/v1/me/subscribed', params={}, headers=headers, json=data)
-
-with open('user_profile.cfg', mode='r', encoding='utf-8') as f:
-    user_profile = json.load(f)
-    # user_profile = json.loads(f.read().rstrip('\0'))
-
-# user_profile['UserProfile'].update({'modDependencies': {'SslType': 'ModDependencies', 'SslValue': {'dependencies': {}}}})
-user_profile['UserProfile'].update({'modFilter': {'user' + str(randint(10**3, 10**5)): {'SslType': 'ModBrowserConfigData', 'SslValue': {'isEnabledMode': False, 'tags': [], 'isConsoleForbiddenMode': False, 'isSubscriptionsMode': False, 'isConsoleApprovedMode': False, 'sortIsAsc': False, 'sortField': 'popular'}}}})
+r = requests.get('https://api.mod.io/v1/me/subscribed', headers=headers, json=data)
 
 for data in r.json()['data']:
     mod_id = data['id']
@@ -61,8 +52,3 @@ for data in r.json()['data']:
         shutil.unpack_archive(mod_fullpath, mod_dir, 'zip')
         os.remove(mod_fullpath)
         print('OK')
-    finally:
-        user_profile['UserProfile']['modDependencies']['SslValue']['dependencies'].update({str(mod_id): []})
-
-with open(USER_PROFILE, mode='w', encoding='utf-8') as f:
-    json.dump(user_profile, f, ensure_ascii=False, indent=4)
