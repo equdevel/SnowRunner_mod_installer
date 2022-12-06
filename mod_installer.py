@@ -61,7 +61,8 @@ for data in r.json()['data']:
         print('OK')
 
 user_profile['UserProfile']['modDependencies']['SslValue']['dependencies'] = {str(mod_id): [] for mod_id in mods_subscribed}
-user_profile['UserProfile']['modStateList'] = [mod for mod in user_profile['UserProfile']['modStateList'] if mod['modId'] in mods_subscribed]
+if 'modStateList' in user_profile['UserProfile'].keys():
+    user_profile['UserProfile']['modStateList'] = [mod for mod in user_profile['UserProfile']['modStateList'] if mod['modId'] in mods_subscribed]
 
 with open(USER_PROFILE, mode='w', encoding='utf-8') as f:
     f.write(json.dumps(user_profile, ensure_ascii=False, indent=4) + '\0')
