@@ -38,6 +38,7 @@ for data in r.json()['data']:
     except FileExistsError:
         pass
     else:
+        print(f'\nDownloading mod "{mod_name}"')
         for res in ('320x180', '640x360'):
             url = data['logo'][f'thumb_{res}']
             logo_path = f'{mod_dir}/logo_{res}.png'
@@ -45,17 +46,20 @@ for data in r.json()['data']:
             d = requests.get(url)
             with open(logo_path, mode='wb') as f:
                 f.write(d.content)
+        print('--> Downloading thumbs --> OK')
         with open(f'{mod_dir}/modio.json', mode='w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
+        print('--> Creating modio.json --> OK')
         mod_url = data['modfile']['download']['binary_url']
         mod_filename = data['modfile']['filename']
         mod_fullpath = f'{mod_dir}/{mod_filename}'
-        print(f'Downloading "{mod_name}" ({mod_filename})')
+        print(f'--> Downloading {mod_filename}')
         response = requests.get(mod_url, stream=True)
         with open(mod_fullpath, mode='wb') as f:
             for chunk in tqdm(response.iter_content(chunk_size=1024**2), unit=' Mb'):
                 f.write(chunk)
-        print(f'Unpacking {mod_filename}...', end='')
+        print('--> OK')
+        print(f'--> Unpacking {mod_filename} --> ', end='')
         shutil.unpack_archive(mod_fullpath, mod_dir, 'zip')
         os.remove(mod_fullpath)
         print('OK')
@@ -66,3 +70,4 @@ if 'modStateList' in user_profile['UserProfile'].keys():
 
 with open(USER_PROFILE, mode='w', encoding='utf-8') as f:
     f.write(json.dumps(user_profile, ensure_ascii=False, indent=4) + '\0')
+print('\nUpdating user_profile.cfg --> OK')
