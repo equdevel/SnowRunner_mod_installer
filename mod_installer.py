@@ -38,7 +38,7 @@ for data in r.json()['data']:
     except FileExistsError:
         pass
     else:
-        print(f'\nDownloading mod "{mod_name} (id={mod_id})"')
+        print(f'\nDownloading mod "{mod_name}" (id={mod_id})')
         for res in ('320x180', '640x360'):
             url = data['logo'][f'thumb_{res}']
             logo_path = f'{mod_dir}/logo_{res}.png'
