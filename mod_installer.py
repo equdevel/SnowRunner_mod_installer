@@ -1,4 +1,5 @@
 import os
+import sys
 from dotenv import load_dotenv
 import shutil
 import requests
@@ -10,6 +11,12 @@ load_dotenv()
 ACCESS_TOKEN = os.getenv('ACCESS_TOKEN')
 USER_PROFILE = os.getenv('USER_PROFILE')
 MODS_DIR = os.getenv('MODS_DIR')
+CACHE_DIR = f'{MODS_DIR}/../cache'
+
+if len(sys.argv) == 2 and sys.argv[1] == '--clear-cache':
+    shutil.rmtree(CACHE_DIR)
+    os.mkdir(CACHE_DIR)
+    print('\nClearing cache --> OK')
 
 headers = {
     'Authorization': f'Bearer {ACCESS_TOKEN}',
@@ -34,7 +41,7 @@ for data in r.json()['data']:
     mod_dir = f'{MODS_DIR}/{mod_id}'
     mods_subscribed.append(mod_id)
     try:
-        os.rename(f'{MODS_DIR}/../cache/{mod_id}', f'{MODS_DIR}/{mod_id}')  # Trying to find mod in cache
+        os.rename(f'{CACHE_DIR}/{mod_id}', f'{MODS_DIR}/{mod_id}')  # Trying to find mod in cache
         print(f'\nMoving from cache mod "{mod_name}" (id={mod_id})')
     except FileNotFoundError:
         try:
@@ -71,7 +78,7 @@ for data in r.json()['data']:
 mods_installed = user_profile['UserProfile']['modDependencies']['SslValue']['dependencies']
 for mod_id in mods_installed.keys():
     if int(mod_id) not in mods_subscribed:
-        os.rename(f'{MODS_DIR}/{mod_id}', f'{MODS_DIR}/../cache/{mod_id}')
+        os.rename(f'{MODS_DIR}/{mod_id}', f'{CACHE_DIR}/{mod_id}')
         print(f'\nMoving to cache mod with id={mod_id}')
 mods_installed.clear()
 mods_installed.update({str(mod_id): [] for mod_id in mods_subscribed})
