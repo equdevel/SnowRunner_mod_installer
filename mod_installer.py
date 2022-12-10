@@ -13,6 +13,17 @@ USER_PROFILE = os.getenv('USER_PROFILE')
 MODS_DIR = os.getenv('MODS_DIR')
 CACHE_DIR = f'{MODS_DIR}/../cache'
 
+try:
+    with open(USER_PROFILE, mode='r', encoding='utf-8') as f:
+        user_profile = json.loads(f.read().rstrip('\0'))
+except FileNotFoundError:
+    print(f'\nUSER PROFILE NOT FOUND: please check path in .env: {USER_PROFILE}', file=sys.stderr)
+    exit()
+finally:
+    if not os.path.isdir(MODS_DIR):
+        print(f'\nMODS DIRECTORY NOT FOUND: please check path in .env: {MODS_DIR}', file=sys.stderr)
+        exit()
+
 if len(sys.argv) == 2 and sys.argv[1] == '--clear-cache':
     shutil.rmtree(CACHE_DIR)
     os.mkdir(CACHE_DIR)
@@ -29,9 +40,6 @@ data = {
 }
 
 r = requests.get('https://api.mod.io/v1/me/subscribed', headers=headers, json=data)
-
-with open(USER_PROFILE, mode='r', encoding='utf-8') as f:
-    user_profile = json.loads(f.read().rstrip('\0'))
 
 mods_subscribed = []
 
