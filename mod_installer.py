@@ -24,10 +24,21 @@ finally:
         print(f'\nMODS DIRECTORY NOT FOUND: please check path in .env: {MODS_DIR}', file=sys.stderr)
         exit()
 
-if len(sys.argv) == 2 and sys.argv[1] == '--clear-cache':
-    shutil.rmtree(CACHE_DIR)
-    os.mkdir(CACHE_DIR)
-    print('\nClearing cache --> OK')
+update = False
+if len(sys.argv) == 2:
+    match sys.argv[1]:
+        case '--clear-cache':
+            shutil.rmtree(CACHE_DIR)
+            os.mkdir(CACHE_DIR)
+            print('\nClearing cache --> OK')
+        case '--update':
+            update = True
+        case '--help' | '-h' | '/?':
+            print('\nUsage:')
+            print(' --update         Update mods if new versions exists')
+            print(' --clear-cache    Clear mods cache on disk')
+            print(' --help, -h, /?   This help')
+            exit()
 
 headers = {
     'Authorization': f'Bearer {ACCESS_TOKEN}',
@@ -39,6 +50,7 @@ data = {
     'game_id': 306
 }
 
+print('\nChecking subscriptions on mod.io...')
 r = requests.get('https://api.mod.io/v1/me/subscribed', headers=headers, json=data)
 
 mods_subscribed = []
@@ -46,18 +58,35 @@ mods_subscribed = []
 for data in r.json()['data']:
     mod_id = data['id']
     mod_name = data['name']
+    mod_version_download = data['modfile']['version']
     mod_dir = f'{MODS_DIR}/{mod_id}'
     mods_subscribed.append(mod_id)
+    download = False
     try:
         os.rename(f'{CACHE_DIR}/{mod_id}', f'{MODS_DIR}/{mod_id}')  # Trying to find mod in cache
-        print(f'\nMoving from cache mod "{mod_name}" (id={mod_id})')
+        print(f'\nSubscribed mod with id={mod_id} "{mod_name}" found in cache, moving from cache to mods directory.')
     except FileNotFoundError:
+        pass
+    finally:
         try:
             os.mkdir(mod_dir)
         except FileExistsError:
-            pass
+            with open(f'{mod_dir}/modio.json', mode='r', encoding='utf-8') as f:
+                mod_version_installed = json.load(f)['modfile']['version']
+            if mod_version_installed != mod_version_download:
+                if update:
+                    shutil.rmtree(mod_dir)
+                    os.mkdir(mod_dir)
+                    download = True
+                else:
+                    print(f'\nMod with id={mod_id} "{mod_name}" {mod_version_installed} have new version {mod_version_download}, to update run with --update')
         else:
-            print(f'\nDownloading mod "{mod_name}" (id={mod_id})')
+            download = True
+        if download:
+            if update:
+                print(f'\nUpdating mod with id={mod_id} "{mod_name}" from {mod_version_installed} to {mod_version_download}')
+            else:
+                print(f'\nDownloading mod with id={mod_id} "{mod_name}" {mod_version_download}')
             for res in ('320x180', '640x360'):
                 url = data['logo'][f'thumb_{res}']
                 logo_path = f'{mod_dir}/logo_{res}.png'
@@ -87,7 +116,7 @@ mods_installed = user_profile['UserProfile']['modDependencies']['SslValue']['dep
 for mod_id in mods_installed.keys():
     if int(mod_id) not in mods_subscribed:
         os.rename(f'{MODS_DIR}/{mod_id}', f'{CACHE_DIR}/{mod_id}')
-        print(f'\nMoving to cache mod with id={mod_id}')
+        print(f'\nMoving to cache unsubscribed mod with id={mod_id}')
 mods_installed.clear()
 mods_installed.update({str(mod_id): [] for mod_id in mods_subscribed})
 
