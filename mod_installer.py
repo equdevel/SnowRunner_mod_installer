@@ -31,11 +31,11 @@ if len(sys.argv) == 2:
             print('\nClearing cache --> OK')
         case '--update':
             update = True
-        case '--help' | '-h' | '/?':
+        case '--help' | '-h':
             print('\nUsage:')
-            print(' --update         Update mods if new versions exists')
-            print(' --clear-cache    Clear mods cache on disk')
-            print(' --help, -h, /?   This help')
+            print(' --update        Update mods if new versions exists')
+            print(' --clear-cache   Clear mods cache on disk')
+            print(' --help, -h      This help')
             sys.exit()
 
 headers = {
