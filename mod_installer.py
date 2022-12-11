@@ -51,7 +51,11 @@ data = {
 }
 
 print('\nChecking subscriptions on mod.io...')
-r = requests.get('https://api.mod.io/v1/me/subscribed', headers=headers, json=data)
+try:
+    r = requests.get('https://api.mod.io/v1/me/subscribed', headers=headers, json=data)
+except requests.RequestException:
+    print('\nCONNECTION TO mod.io FAILED: please check your Internet connection', file=sys.stderr)
+    exit()
 
 mods_subscribed = []
 
