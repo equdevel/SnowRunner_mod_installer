@@ -17,12 +17,10 @@ try:
     with open(USER_PROFILE, mode='r', encoding='utf-8') as f:
         user_profile = json.loads(f.read().rstrip('\0'))
 except FileNotFoundError:
-    print(f'\nUSER PROFILE NOT FOUND: please check path in .env: {USER_PROFILE}', file=sys.stderr)
-    exit()
+    sys.exit(f'\nUSER PROFILE NOT FOUND: please check path in .env: {USER_PROFILE}')
 finally:
     if not os.path.isdir(MODS_DIR):
-        print(f'\nMODS DIRECTORY NOT FOUND: please check path in .env: {MODS_DIR}', file=sys.stderr)
-        exit()
+        sys.exit(f'\nMODS DIRECTORY NOT FOUND: please check path in .env: {MODS_DIR}')
 
 update = False
 if len(sys.argv) == 2:
@@ -38,7 +36,7 @@ if len(sys.argv) == 2:
             print(' --update         Update mods if new versions exists')
             print(' --clear-cache    Clear mods cache on disk')
             print(' --help, -h, /?   This help')
-            exit()
+            sys.exit()
 
 headers = {
     'Authorization': f'Bearer {ACCESS_TOKEN}',
@@ -54,15 +52,12 @@ print('\nChecking subscriptions on mod.io...')
 try:
     r = requests.get('https://api.mod.io/v1/me/subscribed', headers=headers, json=data)
 except requests.RequestException:
-    print('\nCONNECTION TO mod.io FAILED: please check your Internet connection', file=sys.stderr)
-    exit()
+    sys.exit('\nCONNECTION TO mod.io FAILED: please check your Internet connection')
 else:
     if r.status_code == 401:
-        print(f'\nCONNECTION TO mod.io FAILED: please check your access token in .env', file=sys.stderr)
-        exit()
+        sys.exit(f'\nCONNECTION TO mod.io FAILED: please check your access token in .env')
     elif r.status_code != 200:
-        print(f'\nCONNECTION TO mod.io FAILED: status_code={r.status_code}', file=sys.stderr)
-        exit()
+        sys.exit(f'\nCONNECTION TO mod.io FAILED: status_code={r.status_code}')
 
 mods_subscribed = []
 
