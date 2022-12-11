@@ -17,7 +17,8 @@ try:
     with open(USER_PROFILE, mode='r', encoding='utf-8') as f:
         user_profile = json.loads(f.read().rstrip('\0'))
 except FileNotFoundError:
-    sys.exit(f'\nUSER PROFILE NOT FOUND: please check path in .env: {USER_PROFILE}')
+    print(f'\nUSER PROFILE NOT FOUND: please check path in .env: {USER_PROFILE}', file=sys.stderr)
+    sys.exit(1)
 finally:
     if not os.path.isdir(MODS_DIR):
         sys.exit(f'\nMODS DIRECTORY NOT FOUND: please check path in .env: {MODS_DIR}')
