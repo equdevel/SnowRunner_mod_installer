@@ -13,6 +13,9 @@ USER_PROFILE = os.getenv('USER_PROFILE')
 MODS_DIR = os.getenv('MODS_DIR')
 CACHE_DIR = f'{MODS_DIR}/../cache'
 
+if None in (ACCESS_TOKEN, USER_PROFILE, MODS_DIR):
+    sys.exit(f'\nFILE NOT FOUND OR INCORRECT SETTINGS: please check .env file')
+
 try:
     with open(USER_PROFILE, mode='r', encoding='utf-8') as f:
         user_profile = json.loads(f.read().rstrip('\0'))
