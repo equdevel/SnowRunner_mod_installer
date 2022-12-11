@@ -56,6 +56,13 @@ try:
 except requests.RequestException:
     print('\nCONNECTION TO mod.io FAILED: please check your Internet connection', file=sys.stderr)
     exit()
+else:
+    if r.status_code == 401:
+        print(f'\nCONNECTION TO mod.io FAILED: please check your access token in .env', file=sys.stderr)
+        exit()
+    elif r.status_code != 200:
+        print(f'\nCONNECTION TO mod.io FAILED: status_code={r.status_code}', file=sys.stderr)
+        exit()
 
 mods_subscribed = []
 
