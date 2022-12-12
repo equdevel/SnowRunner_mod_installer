@@ -33,6 +33,7 @@ parser = argparse.ArgumentParser(
 )
 parser.add_argument('-c', '--clear-cache', help='clear mods cache on disk', action='store_true')
 parser.add_argument('-u', '--update', help='update mods if new versions exist', action='store_true')
+parser.add_argument('-v', '--version', version='1.6', action='version')
 args = parser.parse_args()
 update = args.update
 if args.clear_cache:
