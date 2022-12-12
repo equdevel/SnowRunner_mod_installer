@@ -5,6 +5,7 @@ import shutil
 import requests
 import json
 from tqdm import tqdm
+import argparse
 
 
 load_dotenv()
@@ -26,21 +27,18 @@ finally:
     if not os.path.isdir(MODS_DIR):
         sys.exit(f'\nMODS DIRECTORY NOT FOUND: please check path in .env: {MODS_DIR}')
 
-update = False
-if len(sys.argv) == 2:
-    match sys.argv[1]:
-        case '--clear-cache':
-            shutil.rmtree(CACHE_DIR)
-            os.mkdir(CACHE_DIR)
-            print('\nClearing cache --> OK')
-        case '--update':
-            update = True
-        case '--help' | '-h':
-            print('\nUsage:')
-            print(' --update        Update mods if new versions exists')
-            print(' --clear-cache   Clear mods cache on disk')
-            print(' --help, -h      This help')
-            sys.exit()
+parser = argparse.ArgumentParser(
+    prog='mod_installer',
+    description='Download mods from mod.io and install them to SnowRunner'
+)
+parser.add_argument('-c', '--clear-cache', help='clear mods cache on disk', action='store_true')
+parser.add_argument('-u', '--update', help='update mods if new versions exist', action='store_true')
+args = parser.parse_args()
+update = args.update
+if args.clear_cache:
+    shutil.rmtree(CACHE_DIR)
+    os.mkdir(CACHE_DIR)
+    print('\nClearing cache --> OK')
 
 headers = {
     'Authorization': f'Bearer {ACCESS_TOKEN}',
