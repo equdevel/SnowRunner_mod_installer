@@ -42,18 +42,14 @@ if args.clear_cache:
     print('\nClearing cache --> OK')
 
 headers = {
-    'Authorization': f'Bearer {ACCESS_TOKEN}',
     'Accept': 'application/json',
+    'Authorization': f'Bearer {ACCESS_TOKEN}',
     'X-Modio-Platform': 'Windows'
-}
-
-data = {
-    'game_id': 306
 }
 
 print('\nChecking subscriptions on mod.io...')
 try:
-    r = requests.get('https://api.mod.io/v1/me/subscribed', headers=headers, json=data)
+    r = requests.get('https://api.mod.io/v1/me/subscribed?game_id=306', headers=headers)
 except requests.RequestException:
     sys.exit('\nCONNECTION TO mod.io FAILED: please check your Internet connection')
 else:
