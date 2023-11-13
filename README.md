@@ -19,4 +19,4 @@ After new subscriptions or unsubscribes on the mod.io website, repeat everything
 
 If you need to remove all mods from the cache, run the installer with --clear-cache switch.
 
-If you need to download new versions of mods, run the installer with --update switch (without this switch, a message will appear about the release of new versions of mods).
+If you need to download new versions of mods, run the installer with --update switch (without this switch, only a message about new versions of mods will appear).
