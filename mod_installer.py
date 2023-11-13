@@ -8,6 +8,8 @@ from tqdm import tqdm
 import argparse
 
 
+VERSION = '1.6.1'
+
 load_dotenv()
 ACCESS_TOKEN = os.getenv('ACCESS_TOKEN')
 USER_PROFILE = os.getenv('USER_PROFILE')
@@ -33,7 +35,7 @@ parser = argparse.ArgumentParser(
 )
 parser.add_argument('-c', '--clear-cache', help='clear mods cache on disk', action='store_true')
 parser.add_argument('-u', '--update', help='update mods if new versions exist', action='store_true')
-parser.add_argument('-v', '--version', version='1.6', action='version')
+parser.add_argument('-v', '--version', version=VERSION, action='version')
 args = parser.parse_args()
 update = args.update
 if args.clear_cache:
