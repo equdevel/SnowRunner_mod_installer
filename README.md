@@ -20,7 +20,7 @@ Tested on game versions up to 26.2 on builds with the CODEX Steam emu and Nemirt
 9. Start the game, go to "LOAD GAME", exit back (needed to activate the "MOD BROWSER" item)
 10. Go to "MOD BROWSER" and enable the necessary mods. The vehicles will become available in the store, the custom maps will become available in "Custom scenarios". Polygons are also available. Pictures of mods in the menu are also displayed.
 
-After new subscriptions or unsubscribes on the mod.io website, repeat everything from step 7. After unsubscribing and launching the installer, the mod is deactivated and removed from the list of modifications. However, the folder with mod files remains on the disk (in the cache C:/Users/USER_NAME/Documents/My Games/SnowRunner/base/Mods/.modio/cache), and if you subscribe to the mod again, then after running the installer the mod will not exist download again, and will move from the cache to the mods folder, but you will need to manually turn it on again in the game in "MOD BROWSER".
+After new subscriptions or unsubscribes on the mod.io website, repeat everything from step 8. After unsubscribing and launching the installer, the mod is deactivated and removed from the list of modifications. However, the folder with mod files remains on the disk (in the cache C:/Users/USER_NAME/Documents/My Games/SnowRunner/base/Mods/.modio/cache), and if you subscribe to the mod again, then after running the installer the mod will not exist download again, and will move from the cache to the mods folder, but you will need to manually turn it on again in the game in "MOD BROWSER".
 
 If you need to remove all mods from the cache, run the installer with --clear-cache switch.
 
