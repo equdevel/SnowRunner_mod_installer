@@ -3,7 +3,7 @@ Mods installer v1.6.1 for SnowRunner v26.2
 
 The installer allows you to download mods from mod.io in semi-automatic mode. Once you complete all the steps according to the instructions, you will be able to subscribe to the desired mods, then the installer will do everything himself.
 
-Tested on game versions up to 26.2 on builds with the CODEX Steam emu and Nemirtingas Epic emu. It may not work with other builds.
+Tested on game builds with the CODEX Steam emu and Nemirtingas Epic emu. It may not work with other builds.
 
 
 Instructions:
