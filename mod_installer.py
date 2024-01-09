@@ -14,7 +14,7 @@ VERSION = '1.6.2'
 
 def _exit(status, message=''):
     print(message, file=sys.stderr)
-    print('Press any key to exit...')
+    print('\nPress any key to exit...')
     msvcrt.getch()
     sys.exit(status)
 
