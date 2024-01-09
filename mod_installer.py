@@ -1,5 +1,6 @@
 import os
 import sys
+import msvcrt
 from dotenv import load_dotenv
 import shutil
 import requests
@@ -8,7 +9,15 @@ from tqdm import tqdm
 import argparse
 
 
-VERSION = '1.6.1'
+VERSION = '1.6.2'
+
+
+def _exit(status, message=''):
+    print(message, file=sys.stderr)
+    print('Press any key to exit...')
+    msvcrt.getch()
+    sys.exit(status)
+
 
 load_dotenv()
 ACCESS_TOKEN = os.getenv('ACCESS_TOKEN')
@@ -17,17 +26,16 @@ MODS_DIR = os.getenv('MODS_DIR')
 CACHE_DIR = f'{MODS_DIR}/../cache'
 
 if None in (ACCESS_TOKEN, USER_PROFILE, MODS_DIR):
-    sys.exit(f'\nFILE NOT FOUND OR INCORRECT SETTINGS: please check .env file')
+    _exit(1, f'\nFILE NOT FOUND OR INCORRECT SETTINGS: please check .env file')
 
 try:
     with open(USER_PROFILE, mode='r', encoding='utf-8') as f:
         user_profile = json.loads(f.read().rstrip('\0'))
 except FileNotFoundError:
-    print(f'\nUSER PROFILE NOT FOUND: please check path in .env: {USER_PROFILE}', file=sys.stderr)
-    sys.exit(1)
+    _exit(1, f'\nUSER PROFILE NOT FOUND: please check path in .env: {USER_PROFILE}')
 finally:
     if not os.path.isdir(MODS_DIR):
-        sys.exit(f'\nMODS DIRECTORY NOT FOUND: please check path in .env: {MODS_DIR}')
+        _exit(1, f'\nMODS DIRECTORY NOT FOUND: please check path in .env: {MODS_DIR}')
 
 parser = argparse.ArgumentParser(
     prog='mod_installer',
@@ -53,12 +61,12 @@ print('\nChecking subscriptions on mod.io...')
 try:
     r = requests.get('https://api.mod.io/v1/me/subscribed?game_id=306', headers=headers)
 except requests.RequestException:
-    sys.exit('\nCONNECTION TO mod.io FAILED: please check your Internet connection')
+    _exit(1, '\nCONNECTION TO mod.io FAILED: please check your Internet connection')
 else:
     if r.status_code == 401:
-        sys.exit(f'\nCONNECTION TO mod.io FAILED: please check your access token in .env')
+        _exit(1, f'\nCONNECTION TO mod.io FAILED: please check your access token in .env')
     elif r.status_code != 200:
-        sys.exit(f'\nCONNECTION TO mod.io FAILED: status_code={r.status_code}')
+        _exit(1, f'\nCONNECTION TO mod.io FAILED: status_code={r.status_code}')
 
 mods_subscribed = []
 
@@ -134,3 +142,4 @@ if 'modStateList' in user_profile['UserProfile'].keys():
 with open(USER_PROFILE, mode='w', encoding='utf-8') as f:
     f.write(json.dumps(user_profile, ensure_ascii=False, indent=4) + '\0')
 print('\nUpdating user_profile.cfg --> OK')
+_exit(0)
