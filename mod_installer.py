@@ -43,7 +43,7 @@ finally:
 
 parser = argparse.ArgumentParser(
     prog='mod_installer',
-    description='Download mods from mod.io and install them to SnowRunner'
+    description='Downloads mods from mod.io and installs them to SnowRunner/Expeditions'
 )
 parser.add_argument('-c', '--clear-cache', help='clear mods cache on disk', action='store_true')
 parser.add_argument('-u', '--update', help='update mods if new versions exist', action='store_true')
