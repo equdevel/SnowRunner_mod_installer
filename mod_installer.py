@@ -26,8 +26,11 @@ USER_PROFILE = os.getenv('USER_PROFILE')
 MODS_DIR = os.getenv('MODS_DIR')
 CACHE_DIR = f'{MODS_DIR}/../cache'
 
-if None in (ACCESS_TOKEN, USER_PROFILE, MODS_DIR):
+if None in (ACCESS_TOKEN, GAME_ID, USER_PROFILE, MODS_DIR):
     _exit(1, f'\nFILE NOT FOUND OR INCORRECT SETTINGS: please check .env file')
+
+if GAME_ID not in (306, 5734):
+    _exit(1, f'\nIncorrect GAME_ID: please check GAME_ID in .env (should be 306 for SnowRunner or 5734 for Expeditions)')
 
 try:
     with open(USER_PROFILE, mode='r', encoding='utf-8') as f:
