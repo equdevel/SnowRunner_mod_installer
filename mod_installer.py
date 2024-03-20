@@ -9,7 +9,7 @@ from tqdm import tqdm
 import argparse
 
 
-VERSION = '1.6.2'
+VERSION = '1.6.5'
 
 
 def _exit(status, message=''):
@@ -21,6 +21,7 @@ def _exit(status, message=''):
 
 load_dotenv()
 ACCESS_TOKEN = os.getenv('ACCESS_TOKEN')
+GAME_ID = os.getenv('GAME_ID')
 USER_PROFILE = os.getenv('USER_PROFILE')
 MODS_DIR = os.getenv('MODS_DIR')
 CACHE_DIR = f'{MODS_DIR}/../cache'
@@ -59,7 +60,7 @@ headers = {
 
 print('\nChecking subscriptions on mod.io...')
 try:
-    r = requests.get('https://api.mod.io/v1/me/subscribed?game_id=306', headers=headers)
+    r = requests.get(f'https://api.mod.io/v1/me/subscribed?game_id={GAME_ID}', headers=headers)
 except requests.RequestException:
     _exit(1, '\nCONNECTION TO mod.io FAILED: please check your Internet connection')
 else:
