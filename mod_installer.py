@@ -19,6 +19,7 @@ def _exit(status, message=''):
     sys.exit(status)
 
 
+print(f'\nSnowRunner/Expeditions mod installer v{VERSION} by equdevel\n')
 load_dotenv()
 ACCESS_TOKEN = os.getenv('ACCESS_TOKEN')
 GAME_ID = os.getenv('GAME_ID')
@@ -61,7 +62,6 @@ headers = {
     'X-Modio-Platform': 'Windows'
 }
 
-print(f'\nSnowRunner/Expeditions mod installer v{VERSION} by equdevel')
 print('\nChecking subscriptions on mod.io...')
 result_offset = 0
 r_data = []

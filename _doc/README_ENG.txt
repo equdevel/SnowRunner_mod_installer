@@ -1,9 +1,10 @@
-Mods installer v1.6.5 for SnowRunner/Expeditions (ALL GAME VERSIONS ARE SUPPORTED)
+Mods installer v1.6.6 for SnowRunner/Expeditions (ALL GAME VERSIONS ARE SUPPORTED)
 ------------------------------------------
 
 The installer allows you to download mods from mod.io in semi-automatic mode. Once you complete all the steps according to the instructions, you will be able to subscribe to the desired mods, then the installer will do everything himself.
 
 Tested on game builds with the CODEX Steam emu and Nemirtingas Epic emu. It may not work with other builds.
+
 
 DONATE: https://www.donationalerts.com/r/equdevel
 
