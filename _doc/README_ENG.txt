@@ -5,6 +5,8 @@ The installer allows you to download mods from mod.io in semi-automatic mode. On
 
 Tested on game builds with the CODEX Steam emu and Nemirtingas Epic emu. It may not work with other builds.
 
+DONATE: https://www.donationalerts.com/r/equdevel
+
 
 Instructions:
 

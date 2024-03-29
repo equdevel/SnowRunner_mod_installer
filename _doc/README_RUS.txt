@@ -5,6 +5,8 @@
 
 Протестирован на сборках игры с таблеткой CODEX Steam emu и Nemirtingas Epic emu. Возможно не будет работать с другими сборками.
 
+ПОДДЕРЖАТЬ АВТОРА: https://www.donationalerts.com/r/equdevel
+
 
 Инструкция:
 

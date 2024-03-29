@@ -9,7 +9,7 @@ from tqdm import tqdm
 import argparse
 
 
-VERSION = '1.6.5'
+VERSION = '1.6.6'
 
 
 def _exit(status, message=''):
@@ -61,20 +61,30 @@ headers = {
     'X-Modio-Platform': 'Windows'
 }
 
+print(f'\nSnowRunner/Expeditions mod installer v{VERSION} by equdevel')
 print('\nChecking subscriptions on mod.io...')
-try:
-    r = requests.get(f'https://api.mod.io/v1/me/subscribed?game_id={GAME_ID}', headers=headers)
-except requests.RequestException:
-    _exit(1, '\nCONNECTION TO mod.io FAILED: please check your Internet connection')
-else:
-    if r.status_code == 401:
-        _exit(1, f'\nCONNECTION TO mod.io FAILED: please check your access token in .env')
-    elif r.status_code != 200:
-        _exit(1, f'\nCONNECTION TO mod.io FAILED: status_code={r.status_code}')
+result_offset = 0
+r_data = []
+while True:
+    try:
+        r = requests.get(f'https://api.mod.io/v1/me/subscribed?game_id={GAME_ID}&_offset={result_offset}', headers=headers)
+    except requests.RequestException:
+        _exit(1, '\nCONNECTION TO mod.io FAILED: please check your Internet connection')
+    else:
+        if r.status_code == 401:
+            _exit(1, f'\nCONNECTION TO mod.io FAILED: please check your access token in .env')
+        elif r.status_code != 200:
+            _exit(1, f'\nCONNECTION TO mod.io FAILED: status_code={r.status_code}')
+    r = r.json()
+    if r['result_count'] > 0:
+        r_data.extend(r['data'])
+        result_offset += 100
+    else:
+        break
 
 mods_subscribed = []
 
-for data in r.json()['data']:
+for data in r_data:
     mod_id = data['id']
     mod_name = data['name']
     mod_version_download = data['modfile']['version']
@@ -146,4 +156,5 @@ if 'modStateList' in user_profile['UserProfile'].keys():
 with open(USER_PROFILE, mode='w', encoding='utf-8') as f:
     f.write(json.dumps(user_profile, ensure_ascii=False, indent=4) + '\0')
 print('\nUpdating user_profile.cfg --> OK')
+print('\n\nDONATE: https://www.donationalerts.com/r/equdevel')
 _exit(0)
