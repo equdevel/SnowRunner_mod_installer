@@ -1,4 +1,4 @@
-Установщик модов v1.6.6 для SnowRunner/Expeditions (ПОДДЕРЖИВАЮТСЯ ВСЕ ВЕРСИИ ИГРЫ)
+Установщик модов v1.6.6 для SnowRunner/Expeditions (ПОДДЕРЖИВАЮТСЯ ВСЕ ВЕРСИИ ИГР)
 --------------------------------------------
 
 Установщик позволяет скачивать моды с mod.io в полуавтоматическом режиме. Единожды выполнив все действия по инструкции, Вы сможете подписываться на желаемые моды, далее установщик всё сделает сам.
@@ -7,6 +7,10 @@
 
 
 ПОДДЕРЖАТЬ АВТОРА: https://www.donationalerts.com/r/equdevel
+STMods: https://stmods.org/author/equdevel/
+YouTube: https://www.youtube.com/@truck_mania
+Telegram: https://t.me/truck_mania
+GitHub: https://github.com/equdevel
 
 
 Инструкция:
@@ -15,7 +19,7 @@
 
 2. Создать токен в аккаунте https://mod.io/me/access (предварительно нужно подтвердить API Access Terms). Имя токена любое.
 
-3. Переименовать .env_example в .env, затем добавить в него токен. Отредактировать пути к папке модов и файлу профиля игрока. Пути примерно такие, но у Вас могут немного отличаться:
+3. Распаковать архив с программой в любое место. Открыть файл .env в текстовом редакторе (например, в Блокноте), добавить в него токен, отредактировать пути к папке модов и файлу профиля игрока. Пути примерно такие, но у Вас могут немного отличаться:
  - папка с модами: C:/Users/ИМЯ_ПОЛЬЗОВАТЕЛЯ/Documents/My Games/SnowRunner/base/Mods/.modio/mods
  - профиль Steam версии: C:/Users/Public/Documents/Steam/CODEX/1465360/remote/user_profile.cfg
  - профиль EGS версии: C:/Users/ИМЯ_ПОЛЬЗОВАТЕЛЯ/Documents/My Games/SnowRunner/base/storage/0/user_profile.dat

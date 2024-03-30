@@ -1,4 +1,4 @@
-Mods installer v1.6.6 for SnowRunner/Expeditions (ALL GAME VERSIONS ARE SUPPORTED)
+Mods installer v1.6.6 for SnowRunner/Expeditions (ALL GAMES VERSIONS ARE SUPPORTED)
 ------------------------------------------
 
 The installer allows you to download mods from mod.io in semi-automatic mode. Once you complete all the steps according to the instructions, you will be able to subscribe to the desired mods, then the installer will do everything himself.
@@ -7,6 +7,10 @@ Tested on game builds with the CODEX Steam emu and Nemirtingas Epic emu. It may 
 
 
 DONATE: https://www.donationalerts.com/r/equdevel
+STMods: https://stmods.org/author/equdevel/
+YouTube: https://www.youtube.com/@truck_mania
+Telegram: https://t.me/truck_mania
+GitHub: https://github.com/equdevel
 
 
 Instructions:
@@ -15,7 +19,7 @@ Instructions:
 
 2. Create a token in your profile https://mod.io/me/access (you must first confirm the API Access Terms). The token name can be anything.
 
-3. Rename .env_example file to .env, then add the token to it, edit path to the mods folder and path to user profile:
+3. Unpack the program from archive to any location. Open .env file in text editor (in Notepad for example), add the token to it, edit path to the mods folder and path to user profile:
  - mod folder: C:/Users/USER_NAME/Documents/My Games/SnowRunner/base/Mods/.modio/mods
  - Steam profile: C:/Users/Public/Documents/Steam/CODEX/1465360/remote/user_profile.cfg
  - EGS profile: C:/Users/USER_NAME/Documents/My Games/SnowRunner/base/storage/0/user_profile.dat

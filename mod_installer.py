@@ -157,4 +157,8 @@ with open(USER_PROFILE, mode='w', encoding='utf-8') as f:
     f.write(json.dumps(user_profile, ensure_ascii=False, indent=4) + '\0')
 print('\nUpdating user_profile.cfg --> OK')
 print('\n\nDONATE: https://www.donationalerts.com/r/equdevel')
+print('STMods: https://stmods.org/author/equdevel/')
+print('YouTube: https://www.youtube.com/@truck_mania')
+print('Telegram: https://t.me/truck_mania')
+print('GitHub: https://github.com/equdevel')
 _exit(0)
