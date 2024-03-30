@@ -7,7 +7,7 @@ All games versions are supported. Tested on game builds with the CODEX Steam emu
 
 ### Instructions:
 1. Download the latest version [SnowRunner_mod_installer.zip](https://github.com/equdevel/SnowRunner_mod_installer/releases/latest)
-2. Register on mod.io website
+2. Register on https://mod.io/g
 3. Create a token in your profile https://mod.io/me/access (you must first confirm the API Access Terms). The token name can be anything.
 4. Rename .env_example file to .env, open it in text editor (in Notepad for example), add the token to it, edit path to the mods folder and path to user profile:
    - mod folder: C:/Users/USER_NAME/Documents/My Games/SnowRunner/base/Mods/.modio/mods
