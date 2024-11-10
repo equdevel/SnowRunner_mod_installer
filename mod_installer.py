@@ -20,12 +20,29 @@ def _exit(status, message=''):
 
 
 print(f'\nSnowRunner/Expeditions mod installer v{VERSION} by equdevel\n')
+parser = argparse.ArgumentParser(
+    prog='mod_installer',
+    description='Downloads mods from mod.io and installs them to SnowRunner/Expeditions'
+)
+parser.add_argument('-c', '--clear-cache', help='clear mods cache on disk', action='store_true')
+parser.add_argument('-u', '--update', help='update mods if new versions exist', action='store_true')
+parser.add_argument('-v', '--version', version=VERSION, action='version')
+args = parser.parse_args()
+update = args.update
+
 load_dotenv()
 ACCESS_TOKEN = os.getenv('ACCESS_TOKEN')
 GAME_ID = os.getenv('GAME_ID')
 USER_PROFILE = os.getenv('USER_PROFILE')
 MODS_DIR = os.getenv('MODS_DIR')
 CACHE_DIR = f'{MODS_DIR}/../cache'
+
+if args.clear_cache and MODS_DIR is not None:
+    shutil.rmtree(CACHE_DIR)
+    os.mkdir(CACHE_DIR)
+    print('\nClearing cache --> OK')
+else:
+    _exit(1, f'\nMODS DIRECTORY NOT FOUND: please check path in .env: {MODS_DIR}')
 
 if None in (ACCESS_TOKEN, GAME_ID, USER_PROFILE, MODS_DIR):
     _exit(1, f'\nFILE NOT FOUND OR INCORRECT SETTINGS: please check .env file')
@@ -41,20 +58,6 @@ except FileNotFoundError:
 finally:
     if not os.path.isdir(MODS_DIR):
         _exit(1, f'\nMODS DIRECTORY NOT FOUND: please check path in .env: {MODS_DIR}')
-
-parser = argparse.ArgumentParser(
-    prog='mod_installer',
-    description='Downloads mods from mod.io and installs them to SnowRunner/Expeditions'
-)
-parser.add_argument('-c', '--clear-cache', help='clear mods cache on disk', action='store_true')
-parser.add_argument('-u', '--update', help='update mods if new versions exist', action='store_true')
-parser.add_argument('-v', '--version', version=VERSION, action='version')
-args = parser.parse_args()
-update = args.update
-if args.clear_cache:
-    shutil.rmtree(CACHE_DIR)
-    os.mkdir(CACHE_DIR)
-    print('\nClearing cache --> OK')
 
 headers = {
     'Accept': 'application/json',
