@@ -9,7 +9,7 @@ from tqdm import tqdm
 import argparse
 
 
-VERSION = '1.6.6'
+VERSION = '1.6.7'
 
 
 def _exit(status, message=''):
@@ -140,6 +140,10 @@ for data in r_data:
             shutil.unpack_archive(mod_fullpath, mod_dir, 'zip')
             os.remove(mod_fullpath)
             print('OK')
+
+user_profile['UserProfile'].update({'areModsPermitted': 1})
+if 'modDependencies' not in user_profile['UserProfile'].keys():
+    user_profile['UserProfile'].update({'modDependencies': {'SslType': 'ModDependencies', 'SslValue': {'dependencies': {}}}})
 
 mods_installed = user_profile['UserProfile']['modDependencies']['SslValue']['dependencies']
 for mod_id in mods_installed.keys():
