@@ -9,25 +9,27 @@ from tqdm import tqdm
 import argparse
 
 
-VERSION = '1.6.7'
+VERSION = '1.6.8'
 
 
-def _exit(status, message=''):
-    print(message, file=sys.stderr)
+def _exit(status=0, message=''):
+    print(message)
     print('\nPress any key to exit...')
     msvcrt.getch()
     sys.exit(status)
 
 
-print(f'\nSnowRunner/Expeditions mod installer v{VERSION} by equdevel\n')
+print(f'\nSnowRunner/Expeditions mod installer v{VERSION} by EquDevel\n')
 parser = argparse.ArgumentParser(
     prog='mod_installer',
     description='Downloads mods from mod.io and installs them to SnowRunner/Expeditions'
 )
 parser.add_argument('-c', '--clear-cache', help='clear mods cache on disk', action='store_true')
 parser.add_argument('-u', '--update', help='update mods if new versions exist', action='store_true')
-parser.add_argument('-v', '--version', version=VERSION, action='version')
+parser.add_argument('-v', '--version', help='show program\'s version and exit', action='store_true')
 args = parser.parse_args()
+if args.version:
+    _exit(0)
 update = args.update
 
 load_dotenv()
@@ -37,27 +39,30 @@ USER_PROFILE = os.getenv('USER_PROFILE')
 MODS_DIR = os.getenv('MODS_DIR')
 CACHE_DIR = f'{MODS_DIR}/../cache'
 
-if args.clear_cache and MODS_DIR is not None:
+if MODS_DIR is None:
+    _exit(1, f'\nMODS_DIR IS NOT DEFINED')
+if args.clear_cache:
     shutil.rmtree(CACHE_DIR)
     os.mkdir(CACHE_DIR)
     print('\nClearing cache --> OK')
-else:
-    _exit(1, f'\nMODS DIRECTORY NOT FOUND: please check path in .env: {MODS_DIR}')
 
-if None in (ACCESS_TOKEN, GAME_ID, USER_PROFILE, MODS_DIR):
-    _exit(1, f'\nFILE NOT FOUND OR INCORRECT SETTINGS: please check .env file')
-
+if USER_PROFILE is None:
+    _exit(1, f'\nUSER_PROFILE IS NOT DEFINED')
+if ACCESS_TOKEN is None:
+    _exit(1, f'\nACCESS_TOKEN IS NOT DEFINED')
+if GAME_ID is None:
+    _exit(1, f'\nGAME_ID IS NOT DEFINED')
 if GAME_ID not in ('306', '5734'):
-    _exit(1, f'\nIncorrect GAME_ID: please check GAME_ID in .env (should be 306 for SnowRunner or 5734 for Expeditions)')
+    _exit(1, f'\nIncorrect GAME_ID: should be 306 for SnowRunner or 5734 for Expeditions')
 
 try:
     with open(USER_PROFILE, mode='r', encoding='utf-8') as f:
         user_profile = json.loads(f.read().rstrip('\0'))
 except FileNotFoundError:
-    _exit(1, f'\nUSER PROFILE NOT FOUND: please check path in .env: {USER_PROFILE}')
+    _exit(1, f'\nUSER PROFILE NOT FOUND: please check path {USER_PROFILE}')
 finally:
     if not os.path.isdir(MODS_DIR):
-        _exit(1, f'\nMODS DIRECTORY NOT FOUND: please check path in .env: {MODS_DIR}')
+        _exit(1, f'\nMODS DIRECTORY NOT FOUND: please check path {MODS_DIR}')
 
 headers = {
     'Accept': 'application/json',
@@ -75,7 +80,7 @@ while True:
         _exit(1, '\nCONNECTION TO mod.io FAILED: please check your Internet connection')
     else:
         if r.status_code == 401:
-            _exit(1, f'\nCONNECTION TO mod.io FAILED: please check your access token in .env')
+            _exit(1, f'\nCONNECTION TO mod.io FAILED: please check your access token')
         elif r.status_code != 200:
             _exit(1, f'\nCONNECTION TO mod.io FAILED: status_code={r.status_code}')
     r = r.json()
@@ -111,7 +116,7 @@ for data in r_data:
                     os.mkdir(mod_dir)
                     download = True
                 else:
-                    print(f'\nMod with id={mod_id} "{mod_name}" {mod_version_installed} have new version {mod_version_download}, to update run with --update')
+                    print(f'\nMod with id={mod_id} "{mod_name}" {mod_version_installed} has a new version {mod_version_download}, to update run with --update')
         else:
             download = True
         if download:
