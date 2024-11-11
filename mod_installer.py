@@ -43,13 +43,21 @@ CACHE_DIR = f'{MODS_DIR}/../cache'
 if MODS_DIR is None:
     _exit(1, f'\nMODS_DIR IS NOT DEFINED')
 if args.clear_cache:
-    shutil.rmtree(CACHE_DIR)
-    os.mkdir(CACHE_DIR)
-    print('\nClearing cache --> OK')
+    try:
+        shutil.rmtree(CACHE_DIR)
+    except FileNotFoundError:
+        _exit(1, f'\nMODS DIRECTORY NOT FOUND: please check path {MODS_DIR}')
+    else:
+        os.mkdir(CACHE_DIR)
+        print('\nClearing cache --> OK')
 if args.delete_mods:
-    shutil.rmtree(MODS_DIR)
-    os.mkdir(MODS_DIR)
-    print('\nDeleting all mods in mods directory --> OK')
+    try:
+        shutil.rmtree(MODS_DIR)
+    except FileNotFoundError:
+        _exit(1, f'\nMODS DIRECTORY NOT FOUND: please check path {MODS_DIR}')
+    else:
+        os.mkdir(MODS_DIR)
+        print('\nDeleting all mods in mods directory --> OK')
 
 if USER_PROFILE is None:
     _exit(1, f'\nUSER_PROFILE IS NOT DEFINED')
@@ -63,7 +71,7 @@ if GAME_ID not in ('306', '5734'):
 try:
     with open(USER_PROFILE, mode='r', encoding='utf-8') as f:
         user_profile = json.loads(f.read().rstrip('\0'))
-except FileNotFoundError:
+except OSError:
     _exit(1, f'\nUSER PROFILE NOT FOUND: please check path {USER_PROFILE}')
 finally:
     if not os.path.isdir(MODS_DIR):
