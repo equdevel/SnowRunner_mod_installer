@@ -9,7 +9,7 @@ from tqdm import tqdm
 import argparse
 
 
-VERSION = '1.6.8'
+VERSION = '1.6.9'
 
 
 def _exit(status=0, message=''):
@@ -24,9 +24,10 @@ parser = argparse.ArgumentParser(
     prog='mod_installer',
     description='Downloads mods from mod.io and installs them to SnowRunner/Expeditions'
 )
-parser.add_argument('-c', '--clear-cache', help='clear mods cache on disk', action='store_true')
-parser.add_argument('-u', '--update', help='update mods if new versions exist', action='store_true')
 parser.add_argument('-v', '--version', help='show program\'s version and exit', action='store_true')
+parser.add_argument('-u', '--update', help='update mods if new versions exist', action='store_true')
+parser.add_argument('-c', '--clear-cache', help='clear mods cache on disk', action='store_true')
+parser.add_argument('-d', '--delete-mods', help='delete all mods in mods directory', action='store_true')
 args = parser.parse_args()
 if args.version:
     _exit(0)
@@ -45,6 +46,10 @@ if args.clear_cache:
     shutil.rmtree(CACHE_DIR)
     os.mkdir(CACHE_DIR)
     print('\nClearing cache --> OK')
+if args.delete_mods:
+    shutil.rmtree(MODS_DIR)
+    os.mkdir(MODS_DIR)
+    print('\nDeleting all mods in mods directory --> OK')
 
 if USER_PROFILE is None:
     _exit(1, f'\nUSER_PROFILE IS NOT DEFINED')
