@@ -115,14 +115,13 @@ for data in r_data:
                     shutil.rmtree(mod_dir)
                     os.mkdir(mod_dir)
                     download = True
+                    print(f'\nUpdating mod with id={mod_id} "{mod_name}" from {mod_version_installed} to {mod_version_download}')
                 else:
                     print(f'\nMod with id={mod_id} "{mod_name}" {mod_version_installed} has a new version {mod_version_download}, to update run with --update')
         else:
             download = True
         if download:
-            if update:
-                print(f'\nUpdating mod with id={mod_id} "{mod_name}" from {mod_version_installed} to {mod_version_download}')
-            else:
+            if not update:
                 print(f'\nDownloading mod with id={mod_id} "{mod_name}" {mod_version_download}')
             for res in ('320x180', '640x360'):
                 url = data['logo'][f'thumb_{res}']
