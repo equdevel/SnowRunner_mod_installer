@@ -120,9 +120,8 @@ for data in r_data:
                     print(f'\nMod with id={mod_id} "{mod_name}" {mod_version_installed} has a new version {mod_version_download}, to update run with --update')
         else:
             download = True
+            print(f'\nDownloading mod with id={mod_id} "{mod_name}" {mod_version_download}')
         if download:
-            if not update:
-                print(f'\nDownloading mod with id={mod_id} "{mod_name}" {mod_version_download}')
             for res in ('320x180', '640x360'):
                 url = data['logo'][f'thumb_{res}']
                 logo_path = f'{mod_dir}/logo_{res}.png'
