@@ -40,42 +40,58 @@ USER_PROFILE = os.getenv('USER_PROFILE')
 MODS_DIR = os.getenv('MODS_DIR')
 CACHE_DIR = f'{MODS_DIR}/../cache'
 
-if MODS_DIR is None:
-    _exit(1, f'\nMODS_DIR IS NOT DEFINED')
-if args.clear_cache:
-    try:
-        shutil.rmtree(CACHE_DIR)
-    except FileNotFoundError:
-        _exit(1, f'\nMODS DIRECTORY NOT FOUND: please check path {MODS_DIR}')
-    else:
-        os.mkdir(CACHE_DIR)
-        print('\nClearing cache --> OK')
-if args.delete_mods:
-    try:
-        shutil.rmtree(MODS_DIR)
-    except FileNotFoundError:
-        _exit(1, f'\nMODS DIRECTORY NOT FOUND: please check path {MODS_DIR}')
-    else:
-        os.mkdir(MODS_DIR)
-        print('\nDeleting all mods in mods directory --> OK')
+exit_flag = False
 
-if USER_PROFILE is None:
-    _exit(1, f'\nUSER_PROFILE IS NOT DEFINED')
-if ACCESS_TOKEN is None:
-    _exit(1, f'\nACCESS_TOKEN IS NOT DEFINED')
-if GAME_ID is None:
-    _exit(1, f'\nGAME_ID IS NOT DEFINED')
-if GAME_ID not in ('306', '5734'):
-    _exit(1, f'\nIncorrect GAME_ID: should be 306 for SnowRunner or 5734 for Expeditions')
+if MODS_DIR in (None,''):
+    print(f'\nMODS_DIR IS NOT DEFINED')
+    exit_flag = True
+elif not os.path.isdir(MODS_DIR):
+    print(f'\nMODS DIRECTORY NOT FOUND: please check path {MODS_DIR}')
+    exit_flag = True
+else:
+    if args.clear_cache:
+        try:
+            shutil.rmtree(CACHE_DIR)
+        except FileNotFoundError:
+            print(f'\nCACHE DIRECTORY NOT FOUND: please check path {CACHE_DIR}')
+            exit_flag = True
+        else:
+            os.mkdir(CACHE_DIR)
+            print('\nClearing cache --> OK')
+    if args.delete_mods:
+        try:
+            shutil.rmtree(MODS_DIR)
+        except FileNotFoundError:
+            print(f'\nMODS DIRECTORY NOT FOUND: please check path {MODS_DIR}')
+            exit_flag = True
+        else:
+            os.mkdir(MODS_DIR)
+            print('\nDeleting all mods in mods directory --> OK')
 
-try:
-    with open(USER_PROFILE, mode='r', encoding='utf-8') as f:
-        user_profile = json.loads(f.read().rstrip('\0'))
-except OSError:
-    _exit(1, f'\nUSER PROFILE NOT FOUND: please check path {USER_PROFILE}')
-finally:
-    if not os.path.isdir(MODS_DIR):
-        _exit(1, f'\nMODS DIRECTORY NOT FOUND: please check path {MODS_DIR}')
+if USER_PROFILE in (None,''):
+    print(f'\nUSER_PROFILE IS NOT DEFINED')
+    exit_flag = True
+else:
+    try:
+        with open(USER_PROFILE, mode='r', encoding='utf-8') as f:
+            user_profile = json.loads(f.read().rstrip('\0'))
+    except OSError:
+        print(f'\nUSER PROFILE NOT FOUND: please check path {USER_PROFILE}')
+        exit_flag = True
+
+if ACCESS_TOKEN in (None,''):
+    print(f'\nACCESS_TOKEN IS NOT DEFINED')
+    exit_flag = True
+
+if GAME_ID in (None,''):
+    print(f'\nGAME_ID IS NOT DEFINED')
+    exit_flag = True
+elif GAME_ID not in ('306', '5734'):
+    print(f'\nINCORRECT GAME_ID: should be 306 for SnowRunner or 5734 for Expeditions')
+    exit_flag = True
+
+if exit_flag:
+    _exit(1)
 
 headers = {
     'Accept': 'application/json',
