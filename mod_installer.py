@@ -9,14 +9,7 @@ from tqdm import tqdm
 import argparse
 
 
-VERSION = '1.6.9'
-
-
-def _exit(status=0, message=''):
-    print(message)
-    print('\nPress any key to exit...')
-    msvcrt.getch()
-    sys.exit(status)
+VERSION = '1.7.0'
 
 
 print(f'\nSnowRunner/Expeditions mod installer v{VERSION} by EquDevel\n')
@@ -27,8 +20,17 @@ parser = argparse.ArgumentParser(
 parser.add_argument('-v', '--version', help='show program\'s version and exit', action='store_true')
 parser.add_argument('-u', '--update', help='update mods if new versions exist', action='store_true')
 parser.add_argument('-c', '--clear-cache', help='clear mods cache on disk', action='store_true')
-parser.add_argument('-d', '--delete-mods', help='delete all mods in mods directory', action='store_true')
+parser.add_argument('-r', '--reinstall', help='reinstall all mods', action='store_true')
+parser.add_argument('-n', '--no-pause', help='no pause after execution', action='store_true')
 args = parser.parse_args()
+
+def _exit(status=0, message=''):
+    print(message)
+    if not args.no_pause:
+        print('\nPress any key to exit...')
+        msvcrt.getch()
+    sys.exit(status)
+
 if args.version:
     _exit(0)
 update = args.update
@@ -49,7 +51,7 @@ elif not os.path.isdir(MODS_DIR):
     print(f'\nMODS DIRECTORY NOT FOUND: please check path {MODS_DIR}')
     exit_flag = True
 else:
-    if args.clear_cache:
+    if args.clear_cache or args.reinstall:
         try:
             shutil.rmtree(CACHE_DIR)
         except FileNotFoundError:
@@ -58,7 +60,7 @@ else:
         else:
             os.mkdir(CACHE_DIR)
             print('\nClearing cache --> OK')
-    if args.delete_mods:
+    if args.reinstall:
         try:
             shutil.rmtree(MODS_DIR)
         except FileNotFoundError:
