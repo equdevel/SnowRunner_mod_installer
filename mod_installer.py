@@ -26,7 +26,8 @@ parser.add_argument('-n', '--no-pause', help='no pause after execution', action=
 args = parser.parse_args()
 
 def _exit(status=0, message=''):
-    print(message)
+    if message != '':
+        print(message)
     if not args.no_pause:
         print('\nPress any key to exit...')
         msvcrt.getch()
@@ -44,34 +45,25 @@ MODS_DIR = os.getenv('MODS_DIR') or None
 
 exit_flag = False
 
+if GAME is None:
+    print(f'\nGAME IS NOT DEFINED')
+    exit_flag = True
+else:
+    GAME = GAME.strip()
+    if GAME.lower() not in GAME_ID.keys():
+        print(f'\nINCORRECT GAME: should be SnowRunner or Expeditions')
+        exit_flag = True
+    else:
+        GAME_ID = GAME_ID[GAME.lower()]
+
 if MODS_DIR is None:
     print(f'\nMODS_DIR IS NOT DEFINED')
     exit_flag = True
 else:
     MODS_DIR = MODS_DIR.strip()
-    CACHE_DIR = f'{MODS_DIR}/../cache'
     if not os.path.isdir(MODS_DIR):
         print(f'\nMODS DIRECTORY NOT FOUND: please check path {MODS_DIR}')
         exit_flag = True
-    else:
-        if args.clear_cache or args.reinstall:
-            try:
-                shutil.rmtree(CACHE_DIR)
-            except FileNotFoundError:
-                print(f'\nCACHE DIRECTORY NOT FOUND: please check path {CACHE_DIR}')
-                exit_flag = True
-            else:
-                os.mkdir(CACHE_DIR)
-                print('\nClearing cache --> OK')
-        if args.reinstall:
-            try:
-                shutil.rmtree(MODS_DIR)
-            except FileNotFoundError:
-                print(f'\nMODS DIRECTORY NOT FOUND: please check path {MODS_DIR}')
-                exit_flag = True
-            else:
-                os.mkdir(MODS_DIR)
-                print('\nDeleting all mods in mods directory --> OK')
 
 if USER_PROFILE is None:
     print(f'\nUSER_PROFILE IS NOT DEFINED')
@@ -91,23 +83,32 @@ if ACCESS_TOKEN is None:
 else:
     ACCESS_TOKEN = ACCESS_TOKEN.strip()
 
-if GAME is None:
-    print(f'\nGAME IS NOT DEFINED')
-    exit_flag = True
-else:
-    GAME = GAME.strip()
-    if GAME.lower() not in GAME_ID.keys():
-        print(f'\nINCORRECT GAME: should be SnowRunner or Expeditions')
-        exit_flag = True
-    else:
-        GAME_ID = GAME_ID[GAME.lower()]
-
 if exit_flag:
     _exit(1)
 
-print(f'\nGAME={GAME}')
-print(f'\nMODS_DIR={MODS_DIR}')
-print(f'\nUSER_PROFILE={USER_PROFILE}')
+print(f'GAME={GAME}')
+print(f'MODS_DIR={MODS_DIR}')
+print(f'USER_PROFILE={USER_PROFILE}')
+
+CACHE_DIR = f'{MODS_DIR}/../cache'
+if args.clear_cache or args.reinstall:
+    try:
+        shutil.rmtree(CACHE_DIR)
+    except FileNotFoundError:
+        print(f'\nCACHE DIRECTORY NOT FOUND: please check path {CACHE_DIR}')
+        exit_flag = True
+    else:
+        os.mkdir(CACHE_DIR)
+        print('\nClearing cache --> OK')
+if args.reinstall:
+    try:
+        shutil.rmtree(MODS_DIR)
+    except FileNotFoundError:
+        print(f'\nMODS DIRECTORY NOT FOUND: please check path {MODS_DIR}')
+        exit_flag = True
+    else:
+        os.mkdir(MODS_DIR)
+        print('\nDeleting all mods in mods directory --> OK')
 
 headers = {
     'Accept': 'application/json',
@@ -215,7 +216,7 @@ with open(USER_PROFILE, mode='w', encoding='utf-8') as f:
 print('\nUpdating user_profile.cfg --> OK')
 print(f'\nTotal mods subscribed = {len(mods_subscribed)}')
 print(f'Total new mods installed = {installed_mods_count}')
-print('\n\nFinish!')
+print('\nFinish!')
 # print('\n\nDONATE: https://www.donationalerts.com/r/equdevel')
 # print('STMods: https://stmods.org/author/equdevel/')
 # print('YouTube: https://www.youtube.com/@truck_mania')
