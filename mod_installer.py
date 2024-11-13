@@ -9,9 +9,9 @@ from tqdm import tqdm
 import argparse
 
 
-VERSION = '1.7.0'
+VERSION = '1.7.1'
 
-GAME_NAME = {'306': 'SnowRunner', '5734': 'Expeditions'}
+GAME_ID = {'snowrunner': 306, 'expeditions': 5734}
 
 print(f'\nSnowRunner/Expeditions mod installer v{VERSION} by EquDevel\n')
 parser = argparse.ArgumentParser(
@@ -37,44 +37,47 @@ if args.version:
 update = args.update
 
 load_dotenv()
-ACCESS_TOKEN = os.getenv('ACCESS_TOKEN')
-GAME_ID = os.getenv('GAME_ID')
-USER_PROFILE = os.getenv('USER_PROFILE')
-MODS_DIR = os.getenv('MODS_DIR')
-CACHE_DIR = f'{MODS_DIR}/../cache'
+ACCESS_TOKEN = os.getenv('ACCESS_TOKEN') or None
+GAME = os.getenv('GAME') or None
+USER_PROFILE = os.getenv('USER_PROFILE') or None
+MODS_DIR = os.getenv('MODS_DIR') or None
 
 exit_flag = False
 
-if MODS_DIR in (None,''):
+if MODS_DIR is None:
     print(f'\nMODS_DIR IS NOT DEFINED')
     exit_flag = True
-elif not os.path.isdir(MODS_DIR):
-    print(f'\nMODS DIRECTORY NOT FOUND: please check path {MODS_DIR}')
-    exit_flag = True
 else:
-    if args.clear_cache or args.reinstall:
-        try:
-            shutil.rmtree(CACHE_DIR)
-        except FileNotFoundError:
-            print(f'\nCACHE DIRECTORY NOT FOUND: please check path {CACHE_DIR}')
-            exit_flag = True
-        else:
-            os.mkdir(CACHE_DIR)
-            print('\nClearing cache --> OK')
-    if args.reinstall:
-        try:
-            shutil.rmtree(MODS_DIR)
-        except FileNotFoundError:
-            print(f'\nMODS DIRECTORY NOT FOUND: please check path {MODS_DIR}')
-            exit_flag = True
-        else:
-            os.mkdir(MODS_DIR)
-            print('\nDeleting all mods in mods directory --> OK')
+    MODS_DIR = MODS_DIR.strip()
+    CACHE_DIR = f'{MODS_DIR}/../cache'
+    if not os.path.isdir(MODS_DIR):
+        print(f'\nMODS DIRECTORY NOT FOUND: please check path {MODS_DIR}')
+        exit_flag = True
+    else:
+        if args.clear_cache or args.reinstall:
+            try:
+                shutil.rmtree(CACHE_DIR)
+            except FileNotFoundError:
+                print(f'\nCACHE DIRECTORY NOT FOUND: please check path {CACHE_DIR}')
+                exit_flag = True
+            else:
+                os.mkdir(CACHE_DIR)
+                print('\nClearing cache --> OK')
+        if args.reinstall:
+            try:
+                shutil.rmtree(MODS_DIR)
+            except FileNotFoundError:
+                print(f'\nMODS DIRECTORY NOT FOUND: please check path {MODS_DIR}')
+                exit_flag = True
+            else:
+                os.mkdir(MODS_DIR)
+                print('\nDeleting all mods in mods directory --> OK')
 
-if USER_PROFILE in (None,''):
+if USER_PROFILE is None:
     print(f'\nUSER_PROFILE IS NOT DEFINED')
     exit_flag = True
 else:
+    USER_PROFILE = USER_PROFILE.strip()
     try:
         with open(USER_PROFILE, mode='r', encoding='utf-8') as f:
             user_profile = json.loads(f.read().rstrip('\0'))
@@ -82,21 +85,27 @@ else:
         print(f'\nUSER PROFILE NOT FOUND: please check path {USER_PROFILE}')
         exit_flag = True
 
-if ACCESS_TOKEN in (None,''):
+if ACCESS_TOKEN is None:
     print(f'\nACCESS_TOKEN IS NOT DEFINED')
     exit_flag = True
+else:
+    ACCESS_TOKEN = ACCESS_TOKEN.strip()
 
-if GAME_ID in (None,''):
-    print(f'\nGAME_ID IS NOT DEFINED')
+if GAME is None:
+    print(f'\nGAME IS NOT DEFINED')
     exit_flag = True
-elif GAME_ID not in ('306', '5734'):
-    print(f'\nINCORRECT GAME_ID: should be 306 for SnowRunner or 5734 for Expeditions')
-    exit_flag = True
+else:
+    GAME = GAME.strip()
+    if GAME.lower() not in GAME_ID.keys():
+        print(f'\nINCORRECT GAME: should be SnowRunner or Expeditions')
+        exit_flag = True
+    else:
+        GAME_ID = GAME_ID[GAME.lower()]
 
 if exit_flag:
     _exit(1)
 
-print(f'\nInstalling mods to {GAME_NAME[GAME_ID]}')
+print(f'\nGAME={GAME}')
 print(f'\nMODS_DIR={MODS_DIR}')
 print(f'\nUSER_PROFILE={USER_PROFILE}')
 
