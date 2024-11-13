@@ -11,6 +11,7 @@ import argparse
 
 VERSION = '1.7.0'
 
+GAME_NAME = {'306': 'SnowRunner', '5734': 'Expeditions'}
 
 print(f'\nSnowRunner/Expeditions mod installer v{VERSION} by EquDevel\n')
 parser = argparse.ArgumentParser(
@@ -95,6 +96,10 @@ elif GAME_ID not in ('306', '5734'):
 if exit_flag:
     _exit(1)
 
+print(f'\nInstalling mods to {GAME_NAME[GAME_ID]}')
+print(f'\nMODS_DIR={MODS_DIR}')
+print(f'\nUSER_PROFILE={USER_PROFILE}')
+
 headers = {
     'Accept': 'application/json',
     'Authorization': f'Bearer {ACCESS_TOKEN}',
@@ -122,6 +127,7 @@ while True:
         break
 
 mods_subscribed = []
+installed_mods_count = 0
 
 for data in r_data:
     mod_id = data['id']
@@ -177,6 +183,7 @@ for data in r_data:
             shutil.unpack_archive(mod_fullpath, mod_dir, 'zip')
             os.remove(mod_fullpath)
             print('OK')
+            installed_mods_count += 1
 
 user_profile['UserProfile'].update({'areModsPermitted': 1})
 if 'modDependencies' not in user_profile['UserProfile'].keys():
@@ -197,9 +204,12 @@ if 'modStateList' in user_profile['UserProfile'].keys():
 with open(USER_PROFILE, mode='w', encoding='utf-8') as f:
     f.write(json.dumps(user_profile, ensure_ascii=False, indent=4) + '\0')
 print('\nUpdating user_profile.cfg --> OK')
-print('\n\nDONATE: https://www.donationalerts.com/r/equdevel')
-print('STMods: https://stmods.org/author/equdevel/')
-print('YouTube: https://www.youtube.com/@truck_mania')
-print('Telegram: https://t.me/truck_mania')
-print('GitHub: https://github.com/equdevel')
+print(f'\nTotal mods subscribed = {len(mods_subscribed)}')
+print(f'Total new mods installed = {installed_mods_count}')
+print('\n\nFinish!')
+# print('\n\nDONATE: https://www.donationalerts.com/r/equdevel')
+# print('STMods: https://stmods.org/author/equdevel/')
+# print('YouTube: https://www.youtube.com/@truck_mania')
+# print('Telegram: https://t.me/truck_mania')
+# print('GitHub: https://github.com/equdevel')
 _exit(0)
