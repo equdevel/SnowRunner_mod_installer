@@ -1,0 +1,37 @@
+Mods installer from mod.io to SnowRunner/Expeditions (by EquDevel)
+------------------------------------------------------------------
+
+The installer allows you to download mods from mod.io in semi-automatic mode. Once you complete all the steps according to the instructions, you will be able to subscribe to the desired mods, then the installer will do everything himself.
+
+All SnowRunner/Expeditions versions are supported.
+
+
+1. Register on mods site https://mod.io/g
+
+2. Create a token in your profile https://mod.io/me/access, the token name can be anything. Copy the token and insert it to TOKEN.txt
+
+3. Subscribe (or unsubscribe) to the desired mods on mod.io
+
+4. Run "INSTALL MODS" from SnowRunner or Expeditions folder, wait until all the mods you subscribed to are downloaded.
+
+5. Start the game, go to "LOAD GAME", exit back (needed to activate the "MOD BROWSER"), or wait a few seconds and "MOD BROWSER" will appear by itself.
+
+6. Go to "MOD BROWSER" and enable the necessary mods. The vehicles will become available in the store, the custom maps will become available in "Custom scenarios", polygons are also available.
+
+
+After new subscriptions or unsubscribes on the mod.io website, repeat everything from step 4.
+
+After unsubscribing and launching the installer, the mod will be deactivated and removed from the list of modifications.
+However, the folder with mod files remains on the disk (in the cache), and if you subscribe to the mod again, then after running the installer the mod will not be downloaded again,
+but will be moved from the cache to the mods folder and will be available in the game.
+
+If you need to remove all mods from the cache, run "Clear cache and install mods" in "Advanced" folder.
+
+If you need to reinstall all mods, run "Reinstall all mods" in "Advanced" folder. Warning! All mods will be deleted from the disk and downloaded again!
+
+
+Donate to the author: https://www.donationalerts.com/r/equdevel
+STMods: https://stmods.org/author/equdevel/
+YouTube: https://www.youtube.com/@truck_mania
+Telegram: https://t.me/truck_mania
+GitHub: https://github.com/equdevel
