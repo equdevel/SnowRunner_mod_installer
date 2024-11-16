@@ -7,9 +7,10 @@ import requests
 import json
 from tqdm import tqdm
 import argparse
+from glob import glob
 
 
-VERSION = '1.7.1'
+VERSION = '1.7.2'
 
 GAME_ID = {'snowrunner': 306, 'expeditions': 5734}
 
@@ -143,9 +144,13 @@ for data in r_data:
     mod_id = data['id']
     mod_name = data['name']
     mod_version_download = data['modfile']['version']
+    mod_url = data['modfile']['download']['binary_url']
+    mod_filename = data['modfile']['filename']
     mod_dir = f'{MODS_DIR}/{mod_id}'
+    mod_fullpath = f'{mod_dir}/{mod_filename}'
     mods_subscribed.append(mod_id)
     download = False
+    reinstall = False
     try:
         os.rename(f'{CACHE_DIR}/{mod_id}', f'{MODS_DIR}/{mod_id}')  # Trying to find mod in cache
         print(f'\nSubscribed mod with id={mod_id} "{mod_name}" found in cache, moving from cache to mods directory.')
@@ -155,16 +160,26 @@ for data in r_data:
         try:
             os.mkdir(mod_dir)
         except FileExistsError:
-            with open(f'{mod_dir}/modio.json', mode='r', encoding='utf-8') as f:
-                mod_version_installed = json.load(f)['modfile']['version']
-            if mod_version_installed != mod_version_download:
-                if update:
-                    shutil.rmtree(mod_dir)
-                    os.mkdir(mod_dir)
-                    download = True
-                    print(f'\nUpdating mod with id={mod_id} "{mod_name}" from {mod_version_installed} to {mod_version_download}')
-                else:
-                    print(f'\nMod with id={mod_id} "{mod_name}" {mod_version_installed} has a new version {mod_version_download}, to update run with --update')
+            try:
+                with open(f'{mod_dir}/modio.json', mode='r', encoding='utf-8') as f:
+                    mod_version_installed = json.load(f)['modfile']['version']
+            except FileNotFoundError:
+                reinstall = True
+                print(f'\nMod with id={mod_id} "{mod_name}" has been corrupted and will be reinstalled.')
+            else:
+                if os.path.exists(mod_fullpath) or len(glob(f'{mod_dir}/*.png')) != 2 or len(glob(f'{mod_dir}/*.pak')) == 0:
+                    reinstall = True
+                    print(f'\nMod with id={mod_id} "{mod_name}" has been corrupted and will be reinstalled.')
+                elif mod_version_installed != mod_version_download:
+                    if update:
+                        reinstall = True
+                        print(f'\nUpdating mod with id={mod_id} "{mod_name}" from {mod_version_installed} to {mod_version_download}')
+                    else:
+                        print(f'\nMod with id={mod_id} "{mod_name}" {mod_version_installed} has a new version {mod_version_download}, to update run with --update')
+            if reinstall:
+                shutil.rmtree(mod_dir)
+                os.mkdir(mod_dir)
+                download = True
         else:
             download = True
             print(f'\nDownloading mod with id={mod_id} "{mod_name}" {mod_version_download}')
@@ -180,9 +195,6 @@ for data in r_data:
             with open(f'{mod_dir}/modio.json', mode='w', encoding='utf-8') as f:
                 json.dump(data, f, ensure_ascii=False, indent=4)
             print('--> Creating modio.json --> OK')
-            mod_url = data['modfile']['download']['binary_url']
-            mod_filename = data['modfile']['filename']
-            mod_fullpath = f'{mod_dir}/{mod_filename}'
             print(f'--> Downloading {mod_filename}')
             response = requests.get(mod_url, stream=True)
             with open(mod_fullpath, mode='wb') as f:
