@@ -10,7 +10,7 @@ import argparse
 from glob import glob
 
 
-VERSION = '1.7.2'
+VERSION = '1.7.3'
 
 GAME_ID = {'snowrunner': 306, 'expeditions': 5734}
 
@@ -19,11 +19,12 @@ parser = argparse.ArgumentParser(
     prog='mod_installer',
     description='Downloads mods from mod.io and installs them to SnowRunner/Expeditions'
 )
-parser.add_argument('-v', '--version', help='show program\'s version and exit', action='store_true')
-parser.add_argument('-u', '--update', help='update mods if new versions exist', action='store_true')
-parser.add_argument('-c', '--clear-cache', help='clear mods cache on disk', action='store_true')
-parser.add_argument('-r', '--reinstall', help='reinstall all mods', action='store_true')
-parser.add_argument('-n', '--no-pause', help='no pause after execution', action='store_true')
+parser.add_argument('-v', '--version', help='show program\'s version and exit', action='store_true', dest='version')
+parser.add_argument('-u', '--update', help='update mods if new versions exist', action='store_true', dest='update')
+parser.add_argument('-c', '--clear-cache', help='clear mods cache on disk', action='store_true', dest='clear_cache')
+parser.add_argument('-r', '--reinstall', help='reinstall mods with specific id\'s', type=str, dest='reinstall', metavar='<id>', nargs='+', default='')
+parser.add_argument('--reinstall-all', help='reinstall all mods', action='store_true', dest='reinstall_all')
+parser.add_argument('-n', '--no-pause', help='no pause after execution', action='store_true', dest='no_pause')
 args = parser.parse_args()
 
 def _exit(status=0, message=''):
@@ -92,7 +93,7 @@ print(f'MODS_DIR={MODS_DIR}')
 print(f'USER_PROFILE={USER_PROFILE}')
 
 CACHE_DIR = f'{MODS_DIR}/../cache'
-if args.clear_cache or args.reinstall:
+if args.clear_cache or args.reinstall_all:
     try:
         shutil.rmtree(CACHE_DIR)
     except FileNotFoundError:
@@ -101,7 +102,7 @@ if args.clear_cache or args.reinstall:
     else:
         os.mkdir(CACHE_DIR)
         print('\nClearing cache --> OK')
-if args.reinstall:
+if args.reinstall_all:
     try:
         shutil.rmtree(MODS_DIR)
     except FileNotFoundError:
@@ -139,6 +140,7 @@ while True:
 
 mods_subscribed = []
 installed_mods_count = 0
+reinstalled_mods_count = 0
 
 for data in r_data:
     mod_id = data['id']
@@ -163,11 +165,14 @@ for data in r_data:
             try:
                 with open(f'{mod_dir}/modio.json', mode='r', encoding='utf-8') as f:
                     mod_version_installed = json.load(f)['modfile']['version']
-            except FileNotFoundError:
+            except FileNotFoundError:  # TODO: handle corrupted json structure
                 reinstall = True
                 print(f'\nMod with id={mod_id} "{mod_name}" has been corrupted and will be reinstalled.')
             else:
-                if os.path.exists(mod_fullpath) or len(glob(f'{mod_dir}/*.png')) != 2 or len(glob(f'{mod_dir}/*.pak')) == 0:
+                if str(mod_id) in args.reinstall:
+                    reinstall = True
+                    print(f'\nMod with id={mod_id} "{mod_name}" will be reinstalled forcibly.')
+                elif os.path.exists(mod_fullpath) or len(glob(f'{mod_dir}/*.png')) != 2 or len(glob(f'{mod_dir}/*.pak')) == 0:
                     reinstall = True
                     print(f'\nMod with id={mod_id} "{mod_name}" has been corrupted and will be reinstalled.')
                 elif mod_version_installed != mod_version_download:
@@ -180,17 +185,20 @@ for data in r_data:
                 shutil.rmtree(mod_dir)
                 os.mkdir(mod_dir)
                 download = True
+                reinstalled_mods_count += 1
         else:
             download = True
             print(f'\nDownloading mod with id={mod_id} "{mod_name}" {mod_version_download}')
+            installed_mods_count += 1
         if download:
             for res in ('320x180', '640x360'):
-                url = data['logo'][f'thumb_{res}']
-                logo_path = f'{mod_dir}/logo_{res}.png'
-                data['logo'][f'thumb_{res}'] = f'file:///{logo_path}'
-                d = requests.get(url)
-                with open(logo_path, mode='wb') as f:
-                    f.write(d.content)
+                thumb_name = f'thumb_{res}'
+                thumb_url = data['logo'][thumb_name]
+                thumb_path = f'{mod_dir}/{thumb_name}.png'
+                data['logo'][thumb_name] = f'file:///{thumb_path}'
+                thumb = requests.get(thumb_url)  # TODO: handle network exceptions
+                with open(thumb_path, mode='wb') as f:
+                    f.write(thumb.content)
             print('--> Downloading thumbs --> OK')
             with open(f'{mod_dir}/modio.json', mode='w', encoding='utf-8') as f:
                 json.dump(data, f, ensure_ascii=False, indent=4)
@@ -198,14 +206,13 @@ for data in r_data:
             print(f'--> Downloading {mod_filename}')
             response = requests.get(mod_url, stream=True)
             with open(mod_fullpath, mode='wb') as f:
-                for chunk in tqdm(response.iter_content(chunk_size=1024**2), unit=' Mb'):
+                for chunk in tqdm(response.iter_content(chunk_size=1024**2), unit=' Mb'):  # TODO: handle network exceptions
                     f.write(chunk)
             print('--> OK')
             print(f'--> Unpacking {mod_filename} --> ', end='')
-            shutil.unpack_archive(mod_fullpath, mod_dir, 'zip')
+            shutil.unpack_archive(mod_fullpath, mod_dir, 'zip')  # TODO: handle shutil.ReadError (delete zip-file)
             os.remove(mod_fullpath)
             print('OK')
-            installed_mods_count += 1
 
 user_profile['UserProfile'].update({'areModsPermitted': 1})
 if 'modDependencies' not in user_profile['UserProfile'].keys():
@@ -228,6 +235,7 @@ with open(USER_PROFILE, mode='w', encoding='utf-8') as f:
 print('\nUpdating user_profile.cfg --> OK')
 print(f'\nTotal mods subscribed = {len(mods_subscribed)}')
 print(f'Total new mods installed = {installed_mods_count}')
+print(f'Total mods updated/reinstalled = {reinstalled_mods_count}')
 print('\nFinish!')
 # print('\n\nDONATE: https://www.donationalerts.com/r/equdevel')
 # print('STMods: https://stmods.org/author/equdevel/')

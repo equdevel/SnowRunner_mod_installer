@@ -1,4 +1,4 @@
-Mods installer from mod.io to SnowRunner/Expeditions (by EquDevel)
+Mod installer from mod.io to SnowRunner/Expeditions (by EquDevel)
 ------------------------------------------------------------------
 
 The installer allows you to download mods from mod.io in semi-automatic mode. Once you complete all the steps according to the instructions, you will be able to subscribe to the desired mods, then the installer will do everything himself.
