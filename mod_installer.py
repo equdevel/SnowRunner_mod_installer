@@ -8,9 +8,10 @@ import json
 from tqdm import tqdm
 import argparse
 from glob import glob
+from json.decoder import JSONDecodeError
 
 
-VERSION = '1.7.3'
+VERSION = '1.7.4'
 
 GAME_ID = {'snowrunner': 306, 'expeditions': 5734}
 
@@ -77,6 +78,9 @@ else:
             user_profile = json.loads(f.read().rstrip('\0'))
     except OSError:
         print(f'\nUSER PROFILE NOT FOUND: please check path {USER_PROFILE}')
+        exit_flag = True
+    except JSONDecodeError:
+        print(f'\nUSER PROFILE IS CORRUPTED: please check structure of {USER_PROFILE}')
         exit_flag = True
 
 if ACCESS_TOKEN is None:
@@ -166,7 +170,7 @@ for data in r_data:
             try:
                 with open(f'{mod_dir}/modio.json', mode='r', encoding='utf-8') as f:
                     mod_version_installed = json.load(f)['modfile']['version']
-            except FileNotFoundError:  # TODO: handle corrupted json structure
+            except (FileNotFoundError, JSONDecodeError):
                 reinstall = True
                 print(f'\nMod with id={mod_id} "{mod_name}" has been corrupted and will be reinstalled.')
             else:
@@ -227,7 +231,7 @@ if 'modDependencies' not in user_profile['UserProfile'].keys():
 mods_installed = user_profile['UserProfile']['modDependencies']['SslValue']['dependencies']
 for mod_id in mods_installed.keys():
     if int(mod_id) not in mods_subscribed:
-        os.rename(f'{MODS_DIR}/{mod_id}', f'{CACHE_DIR}/{mod_id}')
+        os.rename(f'{MODS_DIR}/{mod_id}', f'{CACHE_DIR}/{mod_id}')  # TODO: handle FileNotFoundError
         print(f'\nMoving to cache unsubscribed mod with id={mod_id}')
         unsubscribed_mods_count += 1
 mods_installed.clear()
