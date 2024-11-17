@@ -97,8 +97,7 @@ if args.clear_cache or args.reinstall_all:
     try:
         shutil.rmtree(CACHE_DIR)
     except FileNotFoundError:
-        print(f'\nCACHE DIRECTORY NOT FOUND: please check path {CACHE_DIR}')
-        exit_flag = True
+        _exit(1, f'\nCACHE DIRECTORY NOT FOUND: please check path {CACHE_DIR}')
     else:
         os.mkdir(CACHE_DIR)
         print('\nClearing cache --> OK')
@@ -106,8 +105,7 @@ if args.reinstall_all:
     try:
         shutil.rmtree(MODS_DIR)
     except FileNotFoundError:
-        print(f'\nMODS DIRECTORY NOT FOUND: please check path {MODS_DIR}')
-        exit_flag = True
+        _exit(1, f'\nMODS DIRECTORY NOT FOUND: please check path {MODS_DIR}')
     else:
         os.mkdir(MODS_DIR)
         print('\nDeleting all mods in mods directory --> OK')
@@ -233,6 +231,10 @@ if 'modStateList' in user_profile['UserProfile'].keys():
 with open(USER_PROFILE, mode='w', encoding='utf-8') as f:
     f.write(json.dumps(user_profile, ensure_ascii=False, indent=4) + '\0')
 print('\nUpdating user_profile.cfg --> OK')
+
+if args.reinstall_all:
+    reinstalled_mods_count = installed_mods_count
+    installed_mods_count = 0
 print(f'\nTotal mods subscribed = {len(mods_subscribed)}')
 print(f'Total new mods installed = {installed_mods_count}')
 print(f'Total mods updated/reinstalled = {reinstalled_mods_count}')
