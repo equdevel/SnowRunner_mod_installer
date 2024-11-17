@@ -137,7 +137,9 @@ while True:
         break
 
 mods_subscribed = []
-installed_mods_count = 0
+unsubscribed_mods_count = 0
+installed_new_mods_count = 0
+installed_cached_mods_count = 0
 reinstalled_mods_count = 0
 
 for data in r_data:
@@ -154,6 +156,7 @@ for data in r_data:
     try:
         os.rename(f'{CACHE_DIR}/{mod_id}', f'{MODS_DIR}/{mod_id}')  # Trying to find mod in cache
         print(f'\nSubscribed mod with id={mod_id} "{mod_name}" found in cache, moving from cache to mods directory.')
+        installed_cached_mods_count += 1
     except FileNotFoundError:
         pass
     finally:
@@ -186,8 +189,8 @@ for data in r_data:
                 reinstalled_mods_count += 1
         else:
             download = True
-            print(f'\nDownloading mod with id={mod_id} "{mod_name}" {mod_version_download}')
-            installed_mods_count += 1
+            print(f'\nInstalling mod with id={mod_id} "{mod_name}" {mod_version_download}')
+            installed_new_mods_count += 1
         if download:
             for res in ('320x180', '640x360'):
                 thumb_name = f'thumb_{res}'
@@ -221,6 +224,7 @@ for mod_id in mods_installed.keys():
     if int(mod_id) not in mods_subscribed:
         os.rename(f'{MODS_DIR}/{mod_id}', f'{CACHE_DIR}/{mod_id}')
         print(f'\nMoving to cache unsubscribed mod with id={mod_id}')
+        unsubscribed_mods_count += 1
 mods_installed.clear()
 mods_installed.update({str(mod_id): [] for mod_id in mods_subscribed})
 
@@ -233,11 +237,14 @@ with open(USER_PROFILE, mode='w', encoding='utf-8') as f:
 print('\nUpdating user_profile.cfg --> OK')
 
 if args.reinstall_all:
-    reinstalled_mods_count = installed_mods_count
-    installed_mods_count = 0
+    reinstalled_mods_count = installed_new_mods_count
+    installed_new_mods_count = 0
 print(f'\nTotal mods subscribed = {len(mods_subscribed)}')
-print(f'Total new mods installed = {installed_mods_count}')
+print(f'Total mods unsubscribed (moved to cache) = {unsubscribed_mods_count}')
+print(f'Total new mods installed = {installed_new_mods_count}')
+print(f'Total mods installed from cache = {installed_cached_mods_count}')
 print(f'Total mods updated/reinstalled = {reinstalled_mods_count}')
+
 print('\nFinish!')
 # print('\n\nDONATE: https://www.donationalerts.com/r/equdevel')
 # print('STMods: https://stmods.org/author/equdevel/')
