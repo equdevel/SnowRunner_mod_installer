@@ -211,9 +211,14 @@ for data in r_data:
                     f.write(chunk)
             print('--> OK')
             print(f'--> Unpacking {mod_filename} --> ', end='')
-            shutil.unpack_archive(mod_fullpath, mod_dir, 'zip')  # TODO: handle shutil.ReadError (delete zip-file)
-            os.remove(mod_fullpath)
-            print('OK')
+            try:
+                shutil.unpack_archive(mod_fullpath, mod_dir, 'zip')
+            except shutil.ReadError:
+                print('FAIL')
+                _exit(1, f'\nZip-archive {mod_fullpath} is corrupted. Relaunch mod installer to fix this issue.')
+            else:
+                os.remove(mod_fullpath)
+                print('OK')
 
 user_profile['UserProfile'].update({'areModsPermitted': 1})
 if 'modDependencies' not in user_profile['UserProfile'].keys():
