@@ -65,7 +65,7 @@ if MODS_DIR is None:
 else:
     MODS_DIR = MODS_DIR.strip()
     if not os.path.isdir(MODS_DIR):
-        print(f'\nMODS DIRECTORY NOT FOUND: please check path {MODS_DIR}')
+        print(f'\nMODS DIRECTORY NOT FOUND: check path {MODS_DIR}')
         exit_flag = True
 
 if USER_PROFILE is None:
@@ -77,10 +77,10 @@ else:
         with open(USER_PROFILE, mode='r', encoding='utf-8') as f:
             user_profile = json.loads(f.read().rstrip('\0'))
     except OSError:
-        print(f'\nUSER PROFILE NOT FOUND: please check path {USER_PROFILE}')
+        print(f'\nUSER PROFILE NOT FOUND: check path {USER_PROFILE}')
         exit_flag = True
     except JSONDecodeError:
-        print(f'\nUSER PROFILE IS CORRUPTED: please check structure of {USER_PROFILE}')
+        print(f'\nUSER PROFILE IS CORRUPTED: check structure of {USER_PROFILE}')
         exit_flag = True
 
 if ACCESS_TOKEN is None:
@@ -98,21 +98,25 @@ print(f'USER_PROFILE={USER_PROFILE}')
 
 CACHE_DIR = f'{MODS_DIR}/../cache'
 if args.clear_cache or args.reinstall_all:
+    print('\nClearing cache --> ', end='')
     try:
         shutil.rmtree(CACHE_DIR)
     except FileNotFoundError:
-        _exit(1, f'\nCACHE DIRECTORY NOT FOUND: please check path {CACHE_DIR}')
+        print('FAIL')
+        _exit(1, f'\nCACHE DIRECTORY NOT FOUND: check path {CACHE_DIR}')
     else:
         os.mkdir(CACHE_DIR)
-        print('\nClearing cache --> OK')
+        print('OK')
 if args.reinstall_all:
+    print('\nDeleting all mods in mods directory --> ', end='')
     try:
         shutil.rmtree(MODS_DIR)
     except FileNotFoundError:
-        _exit(1, f'\nMODS DIRECTORY NOT FOUND: please check path {MODS_DIR}')
+        print('FAIL')
+        _exit(1, f'\nMODS DIRECTORY NOT FOUND: check path {MODS_DIR}')
     else:
         os.mkdir(MODS_DIR)
-        print('\nDeleting all mods in mods directory --> OK')
+        print('OK')
 
 headers = {
     'Accept': 'application/json',
@@ -120,25 +124,30 @@ headers = {
     'X-Modio-Platform': 'Windows'
 }
 
-print('\nChecking subscriptions on mod.io...')
+print('\nChecking subscriptions on mod.io --> ', end='')
 result_offset = 0
 r_data = []
 while True:
     try:
         r = requests.get(f'https://api.mod.io/v1/me/subscribed?game_id={GAME_ID}&_offset={result_offset}', headers=headers)
     except requests.RequestException:
-        _exit(1, '\nCONNECTION TO mod.io FAILED: please check your Internet connection')
+        print('FAIL')
+        _exit(1, '\nCONNECTION TO mod.io FAILED: check your Internet connection')
     else:
-        if r.status_code == 401:
-            _exit(1, f'\nCONNECTION TO mod.io FAILED: please check your access token')
-        elif r.status_code != 200:
+        if r.status_code == 200:
+            r = r.json()
+            if r['result_count'] > 0:
+                r_data.extend(r['data'])
+                result_offset += 100
+            else:
+                break
+        elif r.status_code == 401:
+            print('FAIL')
+            _exit(1, f'\nCONNECTION TO mod.io FAILED: check your access token')
+        else:
+            print('FAIL')
             _exit(1, f'\nCONNECTION TO mod.io FAILED: status_code={r.status_code}')
-    r = r.json()
-    if r['result_count'] > 0:
-        r_data.extend(r['data'])
-        result_offset += 100
-    else:
-        break
+print('OK')
 
 mods_subscribed = []
 unsubscribed_mods_count = 0
@@ -196,30 +205,42 @@ for data in r_data:
             print(f'\nInstalling mod with id={mod_id} "{mod_name}" {mod_version_download}')
             installed_new_mods_count += 1
         if download:
+            print('--> Downloading thumbs --> ', end='')
             for res in ('320x180', '640x360'):
                 thumb_name = f'thumb_{res}'
                 thumb_url = data['logo'][thumb_name]
                 thumb_path = f'{mod_dir}/{thumb_name}.png'
                 data['logo'][thumb_name] = f'file:///{thumb_path}'
-                thumb = requests.get(thumb_url)  # TODO: handle network exceptions
-                with open(thumb_path, mode='wb') as f:
-                    f.write(thumb.content)
-            print('--> Downloading thumbs --> OK')
+                try:
+                    thumb = requests.get(thumb_url)
+                except requests.RequestException:
+                    print('FAIL')
+                    _exit(1, '\nCONNECTION TO mod.io FAILED: check your Internet connection')
+                else:
+                    with open(thumb_path, mode='wb') as f:
+                        f.write(thumb.content)
+            print('OK')
+            print('--> Creating modio.json --> ', end='')
             with open(f'{mod_dir}/modio.json', mode='w', encoding='utf-8') as f:
                 json.dump(data, f, ensure_ascii=False, indent=4)
-            print('--> Creating modio.json --> OK')
+            print('OK')
             print(f'--> Downloading {mod_filename}')
-            response = requests.get(mod_url, stream=True)
-            with open(mod_fullpath, mode='wb') as f:
-                for chunk in tqdm(response.iter_content(chunk_size=1024**2), unit=' Mb'):  # TODO: handle network exceptions
-                    f.write(chunk)
-            print('--> OK')
+            try:
+                response = requests.get(mod_url, stream=True)
+            except requests.RequestException:
+                print('--> FAIL')
+                _exit(1, '\nCONNECTION TO mod.io FAILED: check your Internet connection')
+            else:
+                with open(mod_fullpath, mode='wb') as f:
+                    for chunk in tqdm(response.iter_content(chunk_size=1024**2), unit=' Mb'):
+                        f.write(chunk)
+                print('--> OK')
             print(f'--> Unpacking {mod_filename} --> ', end='')
             try:
                 shutil.unpack_archive(mod_fullpath, mod_dir, 'zip')
-            except shutil.ReadError:
+            except (FileNotFoundError, shutil.ReadError):
                 print('FAIL')
-                _exit(1, f'\nZip-archive {mod_fullpath} is corrupted. Relaunch mod installer to fix this issue.')
+                _exit(1, f'\nZip-archive {mod_fullpath} is corrupted or not found. Relaunch mod installer to fix this issue.')
             else:
                 os.remove(mod_fullpath)
                 print('OK')
@@ -231,9 +252,13 @@ if 'modDependencies' not in user_profile['UserProfile'].keys():
 mods_installed = user_profile['UserProfile']['modDependencies']['SslValue']['dependencies']
 for mod_id in mods_installed.keys():
     if int(mod_id) not in mods_subscribed:
-        os.rename(f'{MODS_DIR}/{mod_id}', f'{CACHE_DIR}/{mod_id}')  # TODO: handle FileNotFoundError
-        print(f'\nMoving to cache unsubscribed mod with id={mod_id}')
-        unsubscribed_mods_count += 1
+        try:
+            os.rename(f'{MODS_DIR}/{mod_id}', f'{CACHE_DIR}/{mod_id}')
+        except FileNotFoundError:
+            print(f'\nMod with id={mod_id} not found in mods directory - nothing to move to cache.')
+        else:
+            print(f'\nMoving to cache unsubscribed mod with id={mod_id}')
+            unsubscribed_mods_count += 1
 mods_installed.clear()
 mods_installed.update({str(mod_id): [] for mod_id in mods_subscribed})
 
@@ -241,9 +266,10 @@ if 'modStateList' in user_profile['UserProfile'].keys():
     mods_enabled = user_profile['UserProfile']['modStateList']
     user_profile['UserProfile'].update({'modStateList': [mod for mod in mods_enabled if mod['modId'] in mods_subscribed]})
 
+print('\nUpdating user_profile.cfg --> ', end='')
 with open(USER_PROFILE, mode='w', encoding='utf-8') as f:
     f.write(json.dumps(user_profile, ensure_ascii=False, indent=4) + '\0')
-print('\nUpdating user_profile.cfg --> OK')
+print('OK')
 
 if args.reinstall_all:
     reinstalled_mods_count = installed_new_mods_count
