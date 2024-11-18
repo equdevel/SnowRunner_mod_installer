@@ -6,7 +6,7 @@ All SnowRunner/Expeditions versions are supported.
 
 
 ### Instructions:
-1. Download the latest version [SnowRunner_mod_installer.zip](https://github.com/equdevel/SnowRunner_mod_installer/releases/latest)
+1. Download [the latest version](https://github.com/equdevel/SnowRunner_mod_installer/releases/latest) and unzip it.
 2. Register on mods site https://mod.io/g
 3. Create a token in your profile https://mod.io/me/access, the token name can be anything. Copy the token and insert it to TOKEN.txt
 4. Subscribe (or unsubscribe) to the desired mods on mod.io
@@ -21,6 +21,8 @@ However, the folder with mod files remains on the disk (in the cache), and if yo
 
 If you need to remove all mods from the cache, run "Clear cache and install mods" in "Advanced" folder.
 
-If you need to reinstall all mods, run "Reinstall all mods" in "Advanced" folder. Warning! All mods will be deleted from the disk and downloaded again!
+If you need to force reinstall one or more mods, specify their IDs separated by spaces in MOD_ID.txt in "Advanced" folder, then run "Reinstall mods".
+
+If you need to force reinstall all mods, run "Reinstall all mods" in "Advanced" folder. Warning! All mods will be deleted from the disk and downloaded again!
 
 [![DONATE](https://github.com/equdevel/equdevel.github.io/blob/main/donate_banner_200px.png)](https://www.donationalerts.com/r/equdevel)

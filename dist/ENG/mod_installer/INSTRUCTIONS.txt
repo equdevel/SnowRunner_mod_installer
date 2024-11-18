@@ -27,10 +27,13 @@ but will be moved from the cache to the mods folder and will be available in the
 
 If you need to remove all mods from the cache, run "Clear cache and install mods" in "Advanced" folder.
 
-If you need to reinstall all mods, run "Reinstall all mods" in "Advanced" folder. Warning! All mods will be deleted from the disk and downloaded again!
+If you need to force reinstall one or more mods, specify their IDs separated by spaces in MOD_ID.txt in "Advanced" folder, then run "Reinstall mods".
+
+If you need to force reinstall all mods, run "Reinstall all mods" in "Advanced" folder. Warning! All mods will be deleted from the disk and downloaded again!
 
 
-Donate to the author: https://www.donationalerts.com/r/equdevel
+Donate to the author (YooMoney): https://yoomoney.ru/to/4100118891709740
+Donate to the author (DonationAlerts): https://www.donationalerts.com/r/equdevel
 STMods: https://stmods.org/author/equdevel/
 YouTube: https://www.youtube.com/@truck_mania
 Telegram: https://t.me/truck_mania
