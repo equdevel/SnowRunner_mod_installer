@@ -16,13 +16,14 @@ All SnowRunner/Expeditions versions are supported.
 
 After new subscriptions or unsubscribes on the mod.io website, repeat everything from step 5.
 
-After unsubscribing and launching the installer, the mod will be deactivated and removed from the list of modifications.
-However, the folder with mod files remains on the disk (in the cache), and if you subscribe to the mod again, then after running the installer the mod will not be downloaded again, but will be moved from the cache to the mods folder and will be available in the game.
+After unsubscribing and launching the installer, the mod will be deactivated and removed from the list of modifications. However, the folder with mod files remains on the disk (in the cache), and if you subscribe to the mod again, then after running the installer the mod will not be downloaded again, but will be moved from the cache to the mods folder and will be available in the game.
 
 If you need to remove all mods from the cache, run "Clear cache and install mods" in "Advanced" folder.
 
 If you need to force reinstall one or more mods, specify their IDs separated by spaces in MOD_ID.txt in "Advanced" folder, then run "Reinstall mods".
 
 If you need to force reinstall all mods, run "Reinstall all mods" in "Advanced" folder. Warning! All mods will be deleted from the disk and downloaded again!
+
+If the installer did not find the mods folder and the player profile (user_profile) in automatic mode, you can enter the settings manually. To do this, copy the .env file from "Advanced\Manual conf" folder to the "exe" folder (where mod_installer.exe is located), open it with Notepad and insert the paths and token. Run mod_installer.exe
 
 [![DONATE](https://github.com/equdevel/equdevel.github.io/blob/main/donate_banner_200px.png)](https://www.donationalerts.com/r/equdevel)
