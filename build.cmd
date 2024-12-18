@@ -1,7 +1,7 @@
 @echo off
 
-rmdir /s /q build
-del mod_installer.spec
+rmdir /s /q build 2> NUL
+del mod_installer.spec 2> NUL
 
 call venv313\Scripts\activate
 

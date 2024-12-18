@@ -11,7 +11,7 @@ from glob import glob
 from json.decoder import JSONDecodeError
 
 
-VERSION = '1.7.4'
+VERSION = '1.7.5'
 
 GAME_ID = {'snowrunner': 306, 'expeditions': 5734}
 
@@ -281,9 +281,4 @@ print(f'Total mods installed from cache = {installed_cached_mods_count}')
 print(f'Total mods updated/reinstalled = {reinstalled_mods_count}')
 
 print('\nFinish!')
-# print('\n\nDONATE: https://www.donationalerts.com/r/equdevel')
-# print('STMods: https://stmods.org/author/equdevel/')
-# print('YouTube: https://www.youtube.com/@truck_mania')
-# print('Telegram: https://t.me/truck_mania')
-# print('GitHub: https://github.com/equdevel')
 _exit(0)
